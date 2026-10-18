@@ -1,0 +1,9 @@
+# Bangla is the template locale, not English: `bn` is what a farmer sees by
+# default, so every key is authored in Bangla first and English is the
+# translation. See docs/agrisense/frontend/AGENTS.md rule 5.
+arb-dir: lib/l10n
+template-arb-file: app_bn.arb
+output-localization-file: app_localizations.dart
+output-class: AppL10n
+output-dir: lib/l10n
+nullable-getter: false
