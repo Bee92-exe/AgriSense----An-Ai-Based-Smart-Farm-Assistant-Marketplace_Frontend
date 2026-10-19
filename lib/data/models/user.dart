@@ -86,15 +86,20 @@ class AppUser {
   String get initials {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.characters.first;
-    return parts.first.characters.first + parts.last.characters.first;
+    final first = parts.first.characters.first;
+    if (parts.length == 1) return first;
+    // Two Bangla graphemes can read as a different word (`সে` + `বে`), so a
+    // Bangla name gets one mark; English keeps the familiar two letters.
+    final last = parts.last.characters.first;
+    return RegExp(r'[\u0980-\u09FF]').hasMatch(first) ? first : first + last;
   }
 
-  /// A vendor or expert who has not been approved yet sees the waiting screen
-  /// rather than their shell (A7: both start as `pending`).
+  /// Any account the admin has not approved yet sees the waiting screen rather
+  /// than its shell. Vendors and experts keep their A7 behaviour; farmers are
+  /// included because the same approval queue now covers every registration
+  /// (an admin can auto-approve farmers from the platform settings).
   bool get needsApproval =>
-      (role == Role.vendor || role == Role.expert) &&
-      status == AccountStatus.pending;
+      role != Role.admin && status == AccountStatus.pending;
 
   bool get isSuspended => status == AccountStatus.suspended;
 
