@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/providers/session_provider.dart';
-import '../core/theme/app_metrics.dart';
 import '../core/theme/app_theme.dart';
-import '../core/widgets/app_card.dart';
 import '../core/widgets/states.dart';
 import '../data/models/enums.dart';
+import '../features/admin/admin_home_screen.dart';
+import '../features/admin/admin_screens.dart';
+import '../features/expert/expert_home_screen.dart';
+import '../features/staff/staff_profile_screen.dart';
+import '../features/vendor/vendor_home_screen.dart';
+import '../features/vendor/vendor_screens.dart';
 import '../l10n/app_localizations.dart';
 
 /// The shell for the three non-farmer roles.
@@ -15,18 +19,14 @@ import '../l10n/app_localizations.dart';
 /// D2), so this is one screen that reads the role rather than three near-copies.
 /// None of them get a microphone — voice control is farmer-only by requirement,
 /// and a mic here would advertise a capability the backend refuses.
-class VendorShell extends ConsumerStatefulWidget {
+///
+/// The selected tab lives in a provider per role so a dashboard quick action can
+/// send the user to the queue that needs them.
+class VendorShell extends ConsumerWidget {
   const VendorShell({super.key});
 
   @override
-  ConsumerState<VendorShell> createState() => _VendorShellState();
-}
-
-class _VendorShellState extends ConsumerState<VendorShell> {
-  int _index = 0;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final p = context.palette;
     final user = ref.watch(currentUserProvider);
@@ -35,201 +35,216 @@ class _VendorShellState extends ConsumerState<VendorShell> {
       return const Scaffold(body: LoadingState(rows: 3));
     }
 
-    final destinations = _destinationsFor(user.role, l);
+    final tabs = _tabsFor(user.role, l, ref);
+    final controller = switch (user.role) {
+      Role.vendor => ref.watch(vendorTabProvider),
+      Role.expert => ref.watch(expertTabProvider),
+      Role.admin => ref.watch(adminTabProvider),
+      Role.farmer => ref.watch(vendorTabProvider),
+    };
 
-    return Scaffold(
-      backgroundColor: p.background,
-      body: SafeArea(
-        bottom: false,
-        child: IndexedStack(
-          index: _index,
-          children: [
-            for (var i = 0; i < destinations.length; i++)
-              i == 0
-                  ? _Dashboard(user: user)
-                  : const ComingSoonState(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          color: p.surface,
-          border:
-              Border(top: BorderSide(color: p.outline, width: p.borderWidth)),
-        ),
-        child: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: [
-            for (final d in destinations)
-              NavigationDestination(
-                icon: Icon(d.icon),
-                selectedIcon: Icon(d.activeIcon),
-                label: d.label,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
+    return ValueListenableBuilder<int>(
+      valueListenable: controller,
+      builder: (context, index, _) {
+        // A role switch (or a shortened list) must never point past the end.
+        final safeIndex = index.clamp(0, tabs.length - 1);
 
-  List<({IconData icon, IconData activeIcon, String label})> _destinationsFor(
-    Role role,
-    AppL10n l,
-  ) =>
-      switch (role) {
-        Role.vendor => [
-            (
-              icon: Icons.space_dashboard_outlined,
-              activeIcon: Icons.space_dashboard_rounded,
-              label: l.navDashboard,
-            ),
-            (
-              icon: Icons.inventory_2_outlined,
-              activeIcon: Icons.inventory_2_rounded,
-              label: l.navProducts,
-            ),
-            (
-              icon: Icons.receipt_long_outlined,
-              activeIcon: Icons.receipt_long_rounded,
-              label: l.navOrders,
-            ),
-            (
-              icon: Icons.person_outline_rounded,
-              activeIcon: Icons.person_rounded,
-              label: l.navProfile,
-            ),
-          ],
-        Role.expert => [
-            (
-              icon: Icons.fact_check_outlined,
-              activeIcon: Icons.fact_check_rounded,
-              label: l.navReviews,
-            ),
-            (
-              icon: Icons.campaign_outlined,
-              activeIcon: Icons.campaign_rounded,
-              label: l.navNews,
-            ),
-            (
-              icon: Icons.menu_book_outlined,
-              activeIcon: Icons.menu_book_rounded,
-              label: l.navKnowledge,
-            ),
-            (
-              icon: Icons.person_outline_rounded,
-              activeIcon: Icons.person_rounded,
-              label: l.navProfile,
-            ),
-          ],
-        _ => [
-            (
-              icon: Icons.storefront_outlined,
-              activeIcon: Icons.storefront_rounded,
-              label: l.navVendors,
-            ),
-            (
-              icon: Icons.people_outline_rounded,
-              activeIcon: Icons.people_rounded,
-              label: l.navUsers,
-            ),
-            (
-              icon: Icons.rss_feed_outlined,
-              activeIcon: Icons.rss_feed_rounded,
-              label: l.navSources,
-            ),
-            (
-              icon: Icons.article_outlined,
-              activeIcon: Icons.article_rounded,
-              label: l.navLogs,
-            ),
-          ],
-      };
-}
-
-/// First tab for every non-farmer role: who you are and what needs attention.
-///
-/// The vendor's verification state is the headline because nothing else on this
-/// screen is actionable until an admin has approved the shop (FR-22).
-class _Dashboard extends StatelessWidget {
-  const _Dashboard({required this.user});
-
-  final dynamic user;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppL10n.of(context);
-    final p = context.palette;
-
-    final isVendor = user.role == Role.vendor;
-    final verified = (user.vendor?.isVerified as bool?) ?? false;
-
-    return ListView(
-      padding: const EdgeInsets.all(Space.md),
-      children: [
-        Text(
-          user.name as String,
-          style: context.texts.titleLarge,
-        ),
-        const SizedBox(height: Space.xxs),
-        Text(
-          (user.role as Role) == Role.vendor
-              ? (user.vendor?.shopName as String? ?? '')
-              : (user.expert?.specialization as String? ?? ''),
-          style: context.texts.bodySmall?.copyWith(color: p.onSurfaceMuted),
-        ),
-        const SizedBox(height: Space.lg),
-        if (isVendor)
-          AppCard(
-            tint: verified ? p.primaryContainer : p.harvestContainer,
-            child: Row(
-              children: [
-                Icon(
-                  verified
-                      ? Icons.verified_rounded
-                      : Icons.hourglass_top_rounded,
-                  color: verified ? p.onPrimaryContainer : p.onHarvestContainer,
-                ),
-                const SizedBox(width: Space.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        verified
-                            ? l.vendorVerified
-                            : l.vendorNotVerified,
-                        style: context.texts.titleSmall?.copyWith(
-                          color: verified
-                              ? p.onPrimaryContainer
-                              : p.onHarvestContainer,
-                        ),
-                      ),
-                      Text(
-                        l.pendingBody,
-                        style: context.texts.bodySmall?.copyWith(
-                          color: verified
-                              ? p.onPrimaryContainer
-                              : p.onHarvestContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+        return Scaffold(
+          backgroundColor: p.background,
+          body: SafeArea(
+            bottom: false,
+            child: IndexedStack(
+              index: safeIndex,
+              children: [for (final tab in tabs) tab.child],
             ),
           ),
-        const SizedBox(height: Space.lg),
-        SectionHeader(
-          title: l.comingSoon,
-          icon: Icons.construction_rounded,
-        ),
-        const SizedBox(height: Space.md),
-        const SizedBox(
-          height: 320,
-          child: ComingSoonState(),
-        ),
-      ],
+          bottomNavigationBar: DecoratedBox(
+            decoration: BoxDecoration(
+              color: p.surface,
+              border: Border(
+                top: BorderSide(color: p.outline, width: p.borderWidth),
+              ),
+            ),
+            child: NavigationBarTheme(
+              data: NavigationBarThemeData(
+                backgroundColor: p.surface,
+                indicatorColor: p.primaryContainer,
+                elevation: 0,
+                labelBehavior:
+                    NavigationDestinationLabelBehavior.alwaysShow,
+                labelTextStyle: WidgetStateProperty.resolveWith(
+                  (states) => context.texts.labelSmall?.copyWith(
+                    fontWeight: states.contains(WidgetState.selected)
+                        ? FontWeight.w800
+                        : FontWeight.w500,
+                    color: states.contains(WidgetState.selected)
+                        ? p.primary
+                        : p.onSurfaceMuted,
+                  ),
+                ),
+              ),
+              child: NavigationBar(
+                selectedIndex: safeIndex,
+                onDestinationSelected: (i) => controller.value = i,
+                destinations: [
+                  for (final tab in tabs)
+                    NavigationDestination(
+                      icon: _withBadge(
+                        Icon(tab.icon),
+                        tab.badge,
+                        p.harvest,
+                      ),
+                      selectedIcon: _withBadge(
+                        Icon(tab.activeIcon),
+                        tab.badge,
+                        p.harvest,
+                      ),
+                      label: tab.label,
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _withBadge(Widget icon, int? count, Color color) {
+    if (count == null || count <= 0) return icon;
+    return Badge(
+      backgroundColor: color,
+      label: Text(
+        count > 99 ? '99+' : '$count',
+        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800),
+      ),
+      child: icon,
     );
   }
 }
+
+/// One tab: its icon pair, its Bangla label, the screen behind it and an
+/// optional queue count that is a real number, never a decorative dot.
+typedef _Tab = ({
+  IconData icon,
+  IconData activeIcon,
+  String label,
+  Widget child,
+  int? badge,
+});
+
+List<_Tab> _tabsFor(Role role, AppL10n l, WidgetRef ref) => switch (role) {
+      Role.vendor => [
+          (
+            icon: Icons.space_dashboard_outlined,
+            activeIcon: Icons.space_dashboard_rounded,
+            label: l.navDashboard,
+            child: const VendorHomeScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.inventory_2_outlined,
+            activeIcon: Icons.inventory_2_rounded,
+            label: l.navProducts,
+            child: const VendorProductsScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.receipt_long_outlined,
+            activeIcon: Icons.receipt_long_rounded,
+            label: l.navOrders,
+            child: const VendorOrdersScreen(),
+            badge: ref.watch(vendorDeskProvider).value?.pendingOrders,
+          ),
+          (
+            icon: Icons.insights_outlined,
+            activeIcon: Icons.insights_rounded,
+            label: l.vendorBusiness,
+            child: const VendorBusinessScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.person_outline_rounded,
+            activeIcon: Icons.person_rounded,
+            label: l.navProfile,
+            child: const StaffProfileScreen(),
+            badge: null,
+          ),
+        ],
+      Role.expert => [
+          (
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home_rounded,
+            label: l.expertHome,
+            child: const ExpertHomeScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.forum_outlined,
+            activeIcon: Icons.forum_rounded,
+            label: l.expertQuestions,
+            child: const ExpertQuestionsScreen(),
+            badge:
+                ref.watch(expertDeskProvider).value?.openQuestions.length,
+          ),
+          (
+            icon: Icons.auto_stories_outlined,
+            activeIcon: Icons.auto_stories_rounded,
+            label: l.expertStudio,
+            child: const ExpertStudioScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.video_call_outlined,
+            activeIcon: Icons.video_call_rounded,
+            label: l.expertConsultations,
+            child: const ExpertConsultationsScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.person_outline_rounded,
+            activeIcon: Icons.person_rounded,
+            label: l.navProfile,
+            child: const StaffProfileScreen(),
+            badge: null,
+          ),
+        ],
+      _ => [
+          (
+            icon: Icons.space_dashboard_outlined,
+            activeIcon: Icons.space_dashboard_rounded,
+            label: l.adminOverview,
+            child: const AdminHomeScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.verified_user_outlined,
+            activeIcon: Icons.verified_user_rounded,
+            label: l.adminApprovals,
+            child: const AdminApprovalsScreen(),
+            badge: ref.watch(adminOverviewProvider).value
+                ?.pendingApprovals,
+          ),
+          (
+            icon: Icons.people_outline_rounded,
+            activeIcon: Icons.people_rounded,
+            label: l.navUsers,
+            child: const AdminUsersScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.monitor_heart_outlined,
+            activeIcon: Icons.monitor_heart_rounded,
+            label: l.adminMonitor,
+            child: const AdminMonitorScreen(),
+            badge: null,
+          ),
+          (
+            icon: Icons.tune_rounded,
+            activeIcon: Icons.tune_rounded,
+            label: l.adminSystem,
+            child: const AdminSystemScreen(),
+            badge: null,
+          ),
+        ],
+    };
