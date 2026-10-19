@@ -24,6 +24,7 @@ class AppScreen extends StatefulWidget {
     this.bottomNav,
     this.fab,
     this.banner,
+    this.header,
     this.showBack = true,
     this.ambience,
   });
@@ -47,6 +48,10 @@ class AppScreen extends StatefulWidget {
 
   /// Rendered above the scroll view and full-bleed, e.g. [OfflineBanner].
   final Widget? banner;
+
+  /// Replaces the AppBar entirely. The staff tabs use a painted header here so
+  /// their console does not fall back to the plain white app bar.
+  final Widget? header;
 
   final bool showBack;
 
@@ -81,6 +86,7 @@ class _AppScreenState extends State<AppScreen> {
 
     final body = Column(
       children: [
+        ?widget.header,
         ?widget.banner,
         Expanded(
           child: widget.scrollable
@@ -110,19 +116,22 @@ class _AppScreenState extends State<AppScreen> {
 
     return Scaffold(
       backgroundColor: p.background,
-      appBar: AppBar(
-        title: Text(widget.title),
-        automaticallyImplyLeading: false,
-        leading: widget.leading ??
-            (widget.showBack && canPop
-                ? IconButton(
-                    onPressed: () => Navigator.of(context).maybePop(),
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  )
-                : null),
-        actions: widget.actions,
-      ),
+      appBar: widget.header != null
+          ? null
+          : AppBar(
+              title: Text(widget.title),
+              automaticallyImplyLeading: false,
+              leading: widget.leading ??
+                  (widget.showBack && canPop
+                      ? IconButton(
+                          onPressed: () => Navigator.of(context).maybePop(),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                          tooltip:
+                              MaterialLocalizations.of(context).backButtonTooltip,
+                        )
+                      : null),
+              actions: widget.actions,
+            ),
       body: widget.ambience == null
           ? PageReveal(child: body)
           : AmbientBackdrop(
