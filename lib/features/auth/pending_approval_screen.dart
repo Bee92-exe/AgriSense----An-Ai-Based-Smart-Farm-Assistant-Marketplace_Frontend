@@ -31,8 +31,19 @@ class PendingApprovalScreen extends ConsumerWidget {
     }
 
     final isVendor = user.role == Role.vendor;
+    final isExpert = user.role == Role.expert;
     final shop = user.vendor?.shopName;
     final specialization = user.expert?.specialization;
+    final roleLabel = isVendor
+        ? l.roleVendor
+        : isExpert
+            ? l.roleExpert
+            : l.roleFarmer;
+    final roleIcon = isVendor
+        ? Icons.storefront_rounded
+        : isExpert
+            ? Icons.school_rounded
+            : Icons.agriculture_rounded;
 
     return Scaffold(
       backgroundColor: p.background,
@@ -73,6 +84,49 @@ class PendingApprovalScreen extends ConsumerWidget {
                 color: p.onSurfaceMuted,
               ),
             ),
+            const SizedBox(height: Space.md),
+            AppCard(
+              tint: p.harvestContainer,
+              child: Row(
+                children: [
+                  Icon(Icons.timer_rounded, color: p.onHarvestContainer),
+                  const SizedBox(width: Space.sm),
+                  Expanded(
+                    child: Text(
+                      l.pendingPromise,
+                      style: context.texts.bodySmall?.copyWith(
+                        color: p.onHarvestContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: Space.md),
+            AppCard(
+              child: Column(
+                children: [
+                  _Step(
+                    icon: Icons.check_circle_rounded,
+                    title: l.pendingStepSubmitted,
+                    done: true,
+                  ),
+                  _Step(
+                    icon: Icons.manage_search_rounded,
+                    title: l.pendingStepReview,
+                    body: l.pendingStepReviewBody,
+                    done: false,
+                  ),
+                  _Step(
+                    icon: Icons.verified_rounded,
+                    title: l.pendingStepLive,
+                    done: false,
+                    last: true,
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: Space.lg),
             AppCard(
               child: Column(
@@ -92,14 +146,13 @@ class PendingApprovalScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   ListRow(
-                    title: isVendor ? l.roleVendor : l.roleExpert,
-                    subtitle: isVendor ? shop : specialization,
-                    leading: Icon(
-                      isVendor
-                          ? Icons.storefront_rounded
-                          : Icons.school_rounded,
-                      color: p.onSurfaceMuted,
-                    ),
+                    title: roleLabel,
+                    subtitle: isVendor
+                        ? shop
+                        : isExpert
+                            ? specialization
+                            : user.district,
+                    leading: Icon(roleIcon, color: p.onSurfaceMuted),
                     trailing: const VerifiedBadge(verified: false),
                   ),
                   const Divider(),
@@ -113,7 +166,7 @@ class PendingApprovalScreen extends ConsumerWidget {
             ),
             const SizedBox(height: Space.lg),
             AppButton(
-              label: l.actionRetry,
+              label: l.pendingCheckStatus,
               tone: AppButtonTone.secondary,
               icon: Icons.refresh_rounded,
               // Re-reads the session, which is how the status change would arrive
@@ -129,6 +182,71 @@ class PendingApprovalScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// One line of the approval timeline. The first two steps are always reached
+/// once the screen is visible; the last one is the promise, not a claim.
+class _Step extends StatelessWidget {
+  const _Step({
+    required this.icon,
+    required this.title,
+    required this.done,
+    this.body,
+    this.last = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? body;
+  final bool done;
+  final bool last;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final color = done ? p.success : p.onSurfaceMuted;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Icon(icon, size: 20, color: color),
+            if (!last)
+              Container(
+                width: 2,
+                height: body == null ? 18 : 30,
+                color: p.outline,
+              ),
+          ],
+        ),
+        const SizedBox(width: Space.sm),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(top: 1, bottom: last ? 0 : Space.xs),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: context.texts.labelLarge?.copyWith(
+                    color: done ? p.onSurface : p.onSurfaceMuted,
+                    fontWeight: done ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+                if (body != null)
+                  Text(
+                    body!,
+                    style: context.texts.bodySmall
+                        ?.copyWith(color: p.onSurfaceMuted),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
