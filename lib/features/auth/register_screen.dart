@@ -121,6 +121,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               selected: _role,
               onChanged: (r) => setState(() => _role = r),
             ),
+            const SizedBox(height: Space.sm),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline_rounded,
+                  size: 16,
+                  color: p.primary,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l.registerApprovalNote,
+                    style: context.texts.bodySmall
+                        ?.copyWith(color: p.onSurfaceMuted),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: Space.lg),
             TextField(
               controller: _name,
