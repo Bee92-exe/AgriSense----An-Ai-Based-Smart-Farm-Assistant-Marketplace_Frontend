@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/providers/settings_provider.dart';
-import '../core/theme/app_metrics.dart';
 import '../core/theme/app_theme.dart';
 import '../core/widgets/mic_fab.dart';
-import '../core/widgets/states.dart';
+import '../features/voice/voice_sheet.dart';
 
 /// One navigation destination in a role shell.
 class ShellDestination {
@@ -96,8 +94,8 @@ class _RoleShellState extends ConsumerState<RoleShell> {
               // label.
               padding: const EdgeInsets.only(bottom: 8),
               child: MicFab(
-                onPressed: () => _showVoicePlaceholder(context),
-                isEnabled: false,
+                onPressed: () => showVoiceSheet(context),
+                isEnabled: true,
               ),
             )
           : null,
@@ -105,40 +103,4 @@ class _RoleShellState extends ConsumerState<RoleShell> {
     );
   }
 
-  /// Voice (build task F4) is not implemented yet. Rather than a mic that
-  /// silently does nothing, it explains itself in Bangla — the design system's
-  /// rule for an unavailable capability is an explanation plus the manual path,
-  /// and touch is already fully working here.
-  void _showVoicePlaceholder(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (sheetContext) => Padding(
-        padding: const EdgeInsets.fromLTRB(
-          Space.md,
-          0,
-          Space.md,
-          Space.lg,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(
-              height: 220,
-              child: ComingSoonState(),
-            ),
-            const SizedBox(height: Space.md),
-            Text(
-              ref.watch(settingsProvider).language == 'bn'
-                  ? 'ভয়েস কমান্ড এখনো তৈরি হচ্ছে। আপাতত সব কাজ বোতাম দিয়েই করতে পারবেন।'
-                  : 'Voice control is still being built. For now every task can be done with the buttons.',
-              textAlign: TextAlign.center,
-              style: context.texts.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

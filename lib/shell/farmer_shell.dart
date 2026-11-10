@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/router/app_router.dart';
-import '../core/theme/app_metrics.dart';
 import '../core/theme/app_theme.dart';
 import '../core/widgets/mic_fab.dart';
+import '../features/voice/voice_sheet.dart';
 import '../l10n/app_localizations.dart';
 
 /// The four farmer destinations, in the order the design system fixes them.
@@ -84,49 +84,13 @@ class FarmerMicFab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppL10n.of(context);
-    final p = context.palette;
-
     return MicFab(
-      // Voice control is build task F4 and is not implemented. The button is
-      // shown disabled with an explanation instead of pretending to listen,
-      // because a mic that appears to work and does nothing is worse than one
-      // that says it is not ready.
-      isEnabled: false,
-      onPressed: () {
-        showModalBottomSheet<void>(
-          context: context,
-          showDragHandle: true,
-          builder: (_) => Padding(
-            padding: const EdgeInsets.fromLTRB(
-              Space.md,
-              0,
-              Space.md,
-              Space.lg,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.mic_off_rounded, size: 44, color: p.onSurfaceMuted),
-                const SizedBox(height: Space.sm),
-                Text(
-                  Localizations.localeOf(context).languageCode == 'bn'
-                      ? 'ভয়েস কমান্ড এখনো তৈরি হচ্ছে। সব কাজ বোতাম দিয়েই করতে পারবেন।'
-                      : 'Voice control is still being built. Every task can be done with the buttons for now.',
-                  textAlign: TextAlign.center,
-                  style: context.texts.bodyMedium,
-                ),
-                const SizedBox(height: Space.md),
-                Text(
-                  l.voiceMicLabel,
-                  style: context.texts.bodySmall
-                      ?.copyWith(color: p.onSurfaceMuted),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      // The mic is live. It opens the voice sheet, which starts listening at
+      // once and can be driven by typing if this device has no microphone —
+      // every spoken action also has a button somewhere (PRD), so the mic never
+      // becomes the only way to do something.
+      isEnabled: true,
+      onPressed: () => showVoiceSheet(context),
     );
   }
 }

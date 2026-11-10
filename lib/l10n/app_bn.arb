@@ -91,6 +91,12 @@
   "registerPasswordLabel": "পাসওয়ার্ড",
   "registerPasswordHint": "কমপক্ষে ৮টি অক্ষর",
   "registerPasswordRule": "কমপক্ষে ৮টি অক্ষর দিতে হবে।",
+  "registerPasswordWeak": "পাসওয়ার্ড শুধু সংখ্যা দিয়ে হবে না। অক্ষর ও সংখ্যা মিলিয়ে দিন।",
+  "registerPasswordCommon": "এই পাসওয়ার্ডটি অনেক সহজ। আরও কঠিন কিছু দিন।",
+  "registerPasswordHasMobile": "পাসওয়ার্ডে মোবাইল নম্বর রাখা যাবে না।",
+  "registerNameRequired": "নাম লিখতে হবে।",
+  "registerMobileRequired": "সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন।",
+  "registerDistrictRequired": "জেলা বেছে নিন।",
   "registerSubmit": "অ্যাকাউন্ট খুলুন",
   "registerShopNameLabel": "দোকানের নাম",
   "registerLicenseLabel": "ট্রেড লাইসেন্স নম্বর",
@@ -111,6 +117,25 @@
   "otpSubmit": "যাচাই করুন",
   "otpResend": "আবার কোড পাঠান",
   "otpInvalid": "কোডটি ঠিক নেই। আবার দেখুন।",
+  "phoneRegistered": "এই নম্বর দিয়ে আগে থেকেই অ্যাকাউন্ট আছে।",
+  "resetRequestBody": "আপনার মোবাইল নম্বর দিন। ডেভেলপমেন্টে রিসেট কোডটি API সার্ভার লগে দেখা যাবে।",
+  "resetRequestAction": "রিসেট কোড চান",
+  "resetCodeSent": "{mobile} নম্বরের জন্য একটি রিসেট কোড তৈরি হয়েছে",
+  "@resetCodeSent": {
+    "placeholders": {
+      "mobile": {
+        "type": "String"
+      }
+    }
+  },
+  "resetCodeLabel": "রিসেট কোড",
+  "resetCodeHint": "API সার্ভার লগে দেওয়া কোড",
+  "resetSubmit": "পাসওয়ার্ড বদলান",
+  "resetInvalid": "কোডটি ভুল বা মেয়াদোত্তীর্ণ।",
+  "resetRequestFailed": "রিসেট কোড চাওয়া যায়নি। আবার চেষ্টা করুন।",
+  "resetDoneTitle": "পাসওয়ার্ড বদলানো হয়েছে",
+  "resetDoneBody": "নতুন পাসওয়ার্ড দিয়ে লগইন করুন।",
+  "resetDevNote": "ডেভেলপমেন্টে রিসেট কোডটি API সার্ভার লগে দেখা যাবে।",
   "pendingTitle": "অনুমতির অপেক্ষায়",
   "pendingBody": "আপনার আবেদন পরীক্ষা করা হচ্ছে। অনুমোদন পেলে জানানো হবে।",
   "pendingCheckStatus": "অবস্থা দেখুন",
@@ -148,10 +173,10 @@
   "homeUrgentAction": "খবরটি দেখুন",
   "homeTileCheckCrop": "ফসল দেখুন",
   "homeTileCheckCropHint": "পাতার ছবি তুলে রোগ জানুন",
-  "homeTileAsk": "কথা বলুন",
-  "homeTileAskHint": "বাংলায় প্রশ্ন করুন",
+  "homeTileAsk": "কথা বলে জিজ্ঞাসা",
+  "homeTileAskHint": "মুখে প্রশ্ন করুন, উত্তর শুনুন",
   "homeTileAdvice": "ফসল পরামর্শ",
-  "homeTileAdviceHint": "কোন ফসল লাগাবেন",
+  "homeTileAdviceHint": "মাটি আর মৌসুম অনুযায়ী",
   "homeTileWeather": "আবহাওয়া",
   "homeTileWeatherHint": "বৃষ্টি আর গরমের খবর",
   "homeTileNews": "কৃষি বার্তা",
@@ -195,6 +220,8 @@
   "diagnosisSentToExpert": "আপনার ছবিটি বিশেষজ্ঞের কাছে পাঠানো হয়েছে।",
   "diagnosisExpertReviewed": "বিশেষজ্ঞ যাচাই করেছেন",
   "diagnosisLowTitle": "নিশ্চিত হওয়া যায়নি",
+  "diagnosisNotLeafTitle": "এটি ফসলের পাতা নয়",
+  "diagnosisNotLeafBody": "ছবিতে ফসলের পাতা শনাক্ত করা যায়নি। আক্রান্ত পাতার কাছে গিয়ে, ভালো আলোতে, ঝাপসা ছাড়া ছবি তুলুন।",
   "diagnosisLowBody": "ছবিটি দেখে সঠিক রোগ বোঝা যাচ্ছে না, তাই রোগের নাম দেখানো হচ্ছে না। নতুন ছবি নিন বা বিশেষজ্ঞকে পাঠান।",
   "diagnosisMediumCaution": "আমি পুরোপুরি নিশ্চিত নই। সন্দেহ থাকলে বিশেষজ্ঞকে দেখান।",
   "diagnosisHealthyTitle": "গাছটি সুস্থ",
@@ -309,6 +336,9 @@
   "newsCategoryPest": "পোকা",
   "newsCategoryVirus": "ভাইরাস",
   "newsCategoryNutrient": "পুষ্টির অভাব",
+  "newsCategoryWeather": "আবহাওয়া",
+  "newsCategoryMarket": "বাজারদর",
+  "newsCategoryAdvisory": "পরামর্শ",
   "comingSoon": "শীঘ্রই আসছে",
   "comingSoonBody": "এই অংশটি এখনো তৈরি হচ্ছে।",
   "homeTileOrdersHint": "কেনা-বেচার হিসাব দেখুন",
@@ -323,5 +353,728 @@
   "profileAnimationHint": "আকাশ আর ফসল ধীরে নড়বে",
   "homeAnimationOn": "অ্যানিমেশন চালু",
   "homeAnimationOff": "অ্যানিমেশন বন্ধ",
-  "homeSkyRain": "আজ বৃষ্টির আকাশ"
+  "homeSkyRain": "আজ বৃষ্টির আকাশ",
+  "voiceNoSpeech": "এই ফোনে কথা শোনা যাচ্ছে না। নিচে লিখে বলুন, অথবা বোতাম দিয়েই সব কাজ করুন।",
+  "voiceTypeInstead": "কথা বলতে না পারলে এখানে লিখুন",
+  "voiceOpening": "{screen} খুলছি",
+  "@voiceOpening": {
+    "placeholders": {
+      "screen": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceAnswerTitle": "AI-এর উত্তর",
+  "voiceChooseProduct": "কোন পণ্যটি দরকার? নিচে থেকে বেছে নিন",
+  "voiceFound": "{term}: {count}টি পাওয়া গেছে",
+  "@voiceFound": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceWeatherSummary": "আজ {district}-এ {temp} ডিগ্রি, {condition}",
+  "@voiceWeatherSummary": {
+    "placeholders": {
+      "district": {
+        "type": "String"
+      },
+      "temp": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  "voicePriceLine": "{name}, {price}",
+  "@voicePriceLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "voicePlaceOrder": "আমি {product}, {qty}টি অর্ডার করব। ঠিক থাকলে নিশ্চিত করুন।",
+  "@voicePlaceOrder": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceConfirmYes": "হ্যাঁ, অর্ডার করুন",
+  "adviceTitle": "ফসল পরামর্শ",
+  "adviceIntro": "মাটি আর মৌসুম বলুন — আপনার জেলার আবহাওয়া মিলিয়ে তিনটি ফসলের পরামর্শ দেব।",
+  "adviceSoil": "মাটির ধরন",
+  "adviceSeason": "মৌসুম",
+  "adviceSeasonAuto": "এই মাসের মৌসুম",
+  "adviceDistrict": "জেলা",
+  "adviceAction": "পরামর্শ দিন",
+  "adviceResultsTitle": "আপনার জন্য তিনটি ফসল",
+  "adviceWeatherIncluded": "আবহাওয়া মিলিয়ে দেখা হয়েছে",
+  "adviceWeatherMissing": "আবহাওয়া মেলানো যায়নি — শুধু মাটি আর মৌসুম দেখে",
+  "adviceRank": "ক্রম {rank}",
+  "adviceCalendar": "মৌসুমি ক্যালেন্ডার",
+  "adviceSavedTitle": "আগের পরামর্শ",
+  "adviceSavedEmpty": "এখনো কোনো পরামর্শ নেওয়া হয়নি।",
+  "adviceIntroShort": "মাটি বেছে নিন, তারপর পরামর্শ দিন।",
+  "calendarTitle": "মৌসুমি ক্যালেন্ডার",
+  "calendarPlanting": "বপন / রোপণ",
+  "calendarHarvest": "কাটা / সংগ্রহ",
+  "calendarLegend": "রঙিন মাসে কাজ আছে — নিচে কোন মাসে কী",
+  "calendarEmpty": "এই ফসলের ক্যালেন্ডার এখনো যোগ করা হয়নি।",
+  "calendarMonth": "{month} মাস",
+  "assistantTitle": "কৃষি সহায়ক",
+  "assistantIntro": "ফসলের রোগ, সার বা পোকার যেকোনো প্রশ্ন করতে পারেন। উত্তর যাচাই করা জ্ঞানভাণ্ডার থেকে আসে।",
+  "assistantAsk": "প্রশ্ন লিখুন",
+  "assistantMicHint": "প্রশ্ন বলুন",
+  "assistantListening": "শুনছি…",
+  "assistantThinking": "উত্তর খুঁজছি…",
+  "assistantSources": "সূত্র",
+  "assistantNoAnswerTitle": "এই উত্তর আমার কাছে নেই",
+  "assistantNoAnswerBody": "আন্দাজে কিছু বলছি না। বিশেষজ্ঞকে পাঠালে কৃষিবিদ উত্তর দেবেন।",
+  "assistantOfferExpert": "বিশেষজ্ঞকে পাঠান",
+  "assistantSentToExpert": "আপনার প্রশ্নটি বিশেষজ্ঞের কাছে পাঠানো হয়েছে।",
+  "assistantHistoryTitle": "আগের প্রশ্ন",
+  "assistantHistoryEmpty": "এখনো কোনো প্রশ্ন করা হয়নি।",
+  "assistantYouAsked": "আপনি জিজ্ঞেস করেছিলেন: {question}",
+  "@adviceRank": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "@calendarMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@assistantYouAsked": {
+    "placeholders": {
+      "question": {
+        "type": "String"
+      }
+    }
+  },
+  "adviceDisclaimer": "এটি একটি পরামর্শ — চূড়ান্ত সুপারিশ নয়। জমির মাটি পরীক্ষা করে শেষ সিদ্ধান্ত নিন।",
+  "actionEdit": "সম্পাদনা",
+  "actionDelete": "মুছুন",
+  "vendorAddProduct": "নতুন পণ্য যোগ করুন",
+  "vendorEditProduct": "পণ্য সম্পাদনা",
+  "vendorProductName": "পণ্যের নাম",
+  "vendorProductNameBn": "নাম (বাংলা)",
+  "vendorProductCategory": "ধরন",
+  "vendorProductPrice": "দাম (টাকা)",
+  "vendorProductStock": "স্টকে পরিমাণ",
+  "vendorProductDescription": "বিবরণ",
+  "vendorProductSaved": "পণ্য সংরক্ষণ হয়েছে",
+  "vendorProductDeleted": "পণ্য মোছা হয়েছে",
+  "vendorFieldRequired": "এই ঘরটি পূরণ করুন।",
+  "vendorPriceInvalid": "দাম শূন্যের বেশি হতে হবে।",
+  "vendorStockInvalid": "স্টক শূন্য বা তার বেশি হতে হবে।",
+  "vendorLowStock": "স্টক কম",
+  "vendorOutOfStock": "স্টক শেষ",
+  "vendorStockMinus": "একটি কমান",
+  "vendorStockPlus": "একটি বাড়ান",
+  "vendorStockFine": "সব পণ্যের স্টক ঠিক আছে।",
+  "vendorLowStockTitle": "স্টক দেখুন",
+  "vendorNoProducts": "এখনো কোনো পণ্য যোগ করা হয়নি",
+  "vendorNoProductsBody": "প্রথম পণ্যটি যোগ করলে কৃষকেরা হাট বাজারে দেখতে পাবেন।",
+  "vendorVerifiedHint": "আপনার দোকান যাচাই হয়েছে — পণ্য যোগ করতে পারবেন।",
+  "vendorBlockedBody": "অ্যাডমিন যাচাই করার পরেই পণ্য যোগ বা অর্ডার নিশ্চিত করা যাবে।",
+  "vendorInvalidTransition": "এই ধাপটি এখন করা যাবে না।",
+  "vendorTodayOrders": "আজকের অর্ডার",
+  "vendorTodayRevenue": "আজকের আয়",
+  "vendorPendingOrders": "অপেক্ষারত অর্ডার",
+  "vendorRatingsTitle": "ক্রেতার রেটিং",
+  "vendorRecentOrders": "সাম্প্রতিক অর্ডার",
+  "vendorNoOrders": "এখনো অর্ডার আসেনি",
+  "vendorNoOrdersBody": "কৃষক অর্ডার করলে এখানে দেখা যাবে।",
+  "vendorOrderUpdated": "অর্ডারের অবস্থা বদলেছে",
+  "vendorAcceptOrder": "অর্ডার নিশ্চিত করুন",
+  "vendorRejectOrder": "বাতিল করুন",
+  "vendorShipOrder": "পাঠিয়ে দিন",
+  "vendorDeliverOrder": "পৌঁছে দেওয়া হয়েছে",
+  "vendorRejectTitle": "অর্ডার বাতিলের কারণ",
+  "vendorRejectHint": "যেমন: পণ্যটি স্টকে নেই",
+  "expertTabPending": "অপেক্ষায় ({count})",
+  "@expertTabPending": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "waiting case count, already formatted"
+      }
+    }
+  },
+  "expertTabResolved": "সম্পন্ন ({count})",
+  "@expertTabResolved": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "resolved case count, already formatted"
+      }
+    }
+  },
+  "expertQueueEmpty": "পর্যালোচনার অপেক্ষায় কিছু নেই",
+  "expertQueueEmptyBody": "নিশ্চিত নয় এমন ছবি এলে এখানে দেখা যাবে।",
+  "expertResolved": "সম্পন্ন",
+  "expertNeedsRetake": "নতুন ছবি দরকার",
+  "expertAiGuess": "AI-এর অনুমান (কৃষক দেখেন না)",
+  "expertConfirmDisease": "রোগ নিশ্চিত করুন",
+  "expertPickDisease": "কোন রোগটি?",
+  "expertHealthy": "সুস্থ",
+  "expertNote": "কৃষকের জন্য নোট",
+  "expertCropUnknown": "ফসল অজানা",
+  "expertRetakeTitle": "কৃষককে কী জানাবেন?",
+  "expertRetakeHint": "যেমন: দিনের আলোতে একটি পরিষ্কার পাতা তুলুন",
+  "expertSend": "পাঠান",
+  "expertRequestSent": "কৃষককে জানানো হয়েছে",
+  "expertNewsEmpty": "এই তালিকায় কিছু নেই",
+  "expertNewsEmptyBody": "নতুন খসড়া এলে এখানে দেখা যাবে।",
+  "draftNeedsWriting": "লেখা দরকার",
+  "draftInProgress": "খসড়া",
+  "draftPublished": "প্রকাশিত",
+  "draftRejected": "প্রত্যাখ্যাত",
+  "expertAddManual": "নিজে খবর লিখুন",
+  "expertDraftCreated": "খসড়া তৈরি হয়েছে",
+  "expertSuggestSource": "নতুন সূত্রের প্রস্তাব",
+  "expertSourceSuggested": "প্রস্তাব অ্যাডমিনের কাছে পাঠানো হয়েছে",
+  "expertSourceName": "সূত্রের নাম",
+  "expertSourceUrl": "ওয়েবসাইট",
+  "expertSourceNote": "কেন দরকার (নোট)",
+  "expertSendSuggestion": "প্রস্তাব পাঠান",
+  "expertUrgent": "জরুরি",
+  "expertEditNews": "খবর সম্পাদনা",
+  "expertNewsTitle": "শিরোনাম",
+  "expertNewsSummary": "সারসংক্ষেপ",
+  "expertNewsSymptoms": "লক্ষণ",
+  "expertNewsAction": "কৃষক কী করবেন",
+  "expertNewsSource": "সূত্র",
+  "expertNewsCrop": "ফসল",
+  "expertNewsCategory": "ধরন",
+  "expertNewsSeverity": "গুরুত্ব",
+  "expertSaveDraft": "খসড়া সংরক্ষণ করুন",
+  "expertPublish": "প্রকাশ করুন",
+  "expertPublishUrgent": "জরুরি হিসেবে প্রকাশ",
+  "expertPublishTitle": "কীভাবে প্রকাশ করবেন?",
+  "expertPublishBody": "জরুরি খবর কৃষকের ফোনে বিজ্ঞপ্তি হিসেবে যায়।",
+  "expertPublished": "প্রকাশিত হয়েছে",
+  "expertReject": "প্রত্যাখ্যান",
+  "expertRejectTitle": "প্রত্যাখ্যানের কারণ",
+  "expertRejectHint": "যেমন: সূত্রে তথ্যটি নেই",
+  "expertRejected": "প্রত্যাখ্যান করা হয়েছে",
+  "expertKnowledgeSearch": "রোগ বা নির্দেশনা খুঁজুন",
+  "expertKnowledgeEmpty": "জ্ঞানভাণ্ডারে কিছু নেই",
+  "expertKnowledgeEmptyBody": "অন্য শব্দ দিয়ে খুঁজুন, অথবা নতুন রোগ যোগ হবে।",
+  "expertKnowledgeEditTitle": "জ্ঞানভাণ্ডার সম্পাদনা",
+  "expertKnowledgeProtocol": "চিকিৎসার ধাপ",
+  "expertKnowledgeSource": "সূত্র (BRRI, DAE…)",
+  "expertKnowledgeSafety": "নিরাপত্তা নোট",
+  "expertKnowledgeReindex": "সংরক্ষণ হয়েছে — নতুন তথ্য খোঁজার তালিকায় যোগ করা হচ্ছে।",
+  "accountStatusActive": "সক্রিয়",
+  "accountStatusPending": "অনুমোদনের অপেক্ষায়",
+  "accountStatusSuspended": "স্থগিত",
+  "accountStatusRemoved": "মুছে ফেলা",
+  "vendorPendingReview": "অনুমোদনের অপেক্ষায়",
+  "vendorRejected": "প্রত্যাখ্যাত",
+  "vendorSuspended": "স্থগিত",
+  "adminLicense": "ট্রেড লাইসেন্স",
+  "adminVerify": "যাচাই করুন",
+  "adminReject": "প্রত্যাখ্যান",
+  "adminSuspend": "স্থগিত করুন",
+  "adminResetPassword": "পাসওয়ার্ড রিসেট করুন",
+  "adminResetPasswordBody": "এই অস্থায়ী পাসওয়ার্ডটি একবারই দেখা যাবে। ব্যবহারকারীকে জানিয়ে দিন, এবং লগইনের পর যেন অবশ্যই পাসওয়ার্ড বদলান।",
+  "adminReinstate": "আবার চালু করুন",
+  "adminRejectTitle": "প্রত্যাখ্যানের কারণ",
+  "adminSuspendTitle": "স্থগিত করার কারণ",
+  "adminReasonHint": "কারণটি ব্যবহারকারীকে জানানো হবে",
+  "adminVendorUpdated": "বিক্রেতার অবস্থা বদলেছে",
+  "adminVendorEmpty": "এই তালিকায় বিক্রেতা নেই",
+  "adminVendorEmptyBody": "অন্য অবস্থা বেছে দেখুন।",
+  "adminUserSearch": "নাম, মোবাইল বা জেলা",
+  "adminUserEmpty": "এই শর্তে কেউ নেই",
+  "adminUserEmptyBody": "খোঁজ বা ছাঁকনি বদলে দেখুন।",
+  "adminActivate": "সক্রিয় করুন",
+  "adminUserUpdated": "ব্যবহারকারীর অবস্থা বদলেছে",
+  "adminSourceEmpty": "কোনো সূত্র যোগ করা হয়নি",
+  "adminSourceEmptyBody": "সংবাদ সূত্র যোগ করলে সংগ্রহ শুরু হবে।",
+  "adminAddSource": "নতুন সূত্র",
+  "adminEditSource": "সূত্র সম্পাদনা",
+  "adminSourceName": "সূত্রের নাম",
+  "adminSourceUrl": "ওয়েবসাইটের ঠিকানা",
+  "adminSourceUrlInvalid": "ঠিকানাটি http দিয়ে শুরু হতে হবে।",
+  "adminSourceType": "সূত্রের ধরন",
+  "adminSourceSaved": "সূত্র সংরক্ষণ হয়েছে",
+  "adminSourceOn": "সংগ্রহ চালু",
+  "adminSourceOff": "সংগ্রহ বন্ধ",
+  "adminSourceNeverRun": "এখনো সংগ্রহ হয়নি",
+  "adminSourceFailed": "সর্বশেষ সংগ্রহ ব্যর্থ",
+  "adminSourceDeleteTitle": "সূত্রটি মুছে ফেলবেন?",
+  "adminSourceRemoved": "সূত্র মোছা হয়েছে",
+  "adminScheduleTitle": "সংগ্রহের সময়সূচি",
+  "adminScheduleEnabled": "নিজে থেকে সংগ্রহ করবে",
+  "adminScheduleSaved": "সময়সূচি সংরক্ষণ হয়েছে",
+  "adminIntervalUp": "সময় বাড়ান",
+  "adminIntervalDown": "সময় কমান",
+  "adminRunNow": "এখনই সংগ্রহ করুন",
+  "adminRunDone": "সংগ্রহ শেষ হয়েছে",
+  "adminLogsEmpty": "এই ধরনের লগ নেই",
+  "adminLogsEmptyBody": "অন্য ধরন বেছে দেখুন।",
+  "logTypeSystem": "সিস্টেম",
+  "logTypeCollection": "সংগ্রহ",
+  "logTypeVoice": "ভয়েস",
+  "logTypeAiFallback": "AI ফলব্যাক",
+  "logTypeAudit": "নিরীক্ষা",
+  "sourceTypeGovernment": "সরকারি",
+  "sourceTypeResearch": "গবেষণা",
+  "sourceTypeNewsPortal": "সংবাদমাধ্যম",
+  "vendorDeleteTitle": "পণ্য মুছে ফেলবেন?",
+  "vendorStockLeft": "স্টক {count}",
+  "@vendorStockLeft": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "stock quantity, already formatted"
+      }
+    }
+  },
+  "vendorRatingAverage": "গড় {rating} · {count} জনের রেটিং",
+  "@vendorRatingAverage": {
+    "placeholders": {
+      "rating": {
+        "type": "String",
+        "description": "average rating, one decimal"
+      },
+      "count": {
+        "type": "String",
+        "description": "number of ratings, already formatted"
+      }
+    }
+  },
+  "expertKnowledgeVersion": "সংস্করণ {version}",
+  "@expertKnowledgeVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "description": "entry version number"
+      }
+    }
+  },
+  "adminSubmitted": "জমা {date}",
+  "@adminSubmitted": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "submission date, already formatted"
+      }
+    }
+  },
+  "adminSourceLastRun": "সর্বশেষ সংগ্রহ {time}",
+  "@adminSourceLastRun": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "last run timestamp, already formatted"
+      }
+    }
+  },
+  "adminSourceDeleteConfirm": "{name} আর সংগ্রহ করা হবে না।",
+  "@adminSourceDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "source name"
+      }
+    }
+  },
+  "adminScheduleInterval": "প্রতি {hours} ঘণ্টা পর",
+  "@adminScheduleInterval": {
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "description": "interval in hours, already formatted"
+      }
+    }
+  },
+  "adminScheduleNext": "পরবর্তী সংগ্রহ {time}",
+  "@adminScheduleNext": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "next run timestamp, already formatted"
+      }
+    }
+  },
+  "vendorDeleteConfirm": "{name} মুছে ফেলা হবে। পুরনো অর্ডারে এর হিসাব থেকে যাবে।",
+  "@vendorDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "vendor product name"
+      }
+    }
+  },
+  "pendingPromise": "আপনার অনুরোধ যাচাই করা হচ্ছে — ২৪ ঘণ্টার মধ্যে জানিয়ে দেওয়া হবে।",
+  "pendingStepSubmitted": "আবেদন জমা হয়েছে",
+  "pendingStepReview": "অ্যাডমিন যাচাই করছেন",
+  "pendingStepReviewBody": "সাধারণত ২৪ ঘণ্টার মধ্যে।",
+  "pendingStepLive": "অ্যাকাউন্ট চালু হবে",
+  "registerApprovalNote": "প্রতিটি নতুন অ্যাকাউন্ট চালু হওয়ার আগে অ্যাডমিন যাচাই করেন। সাধারণত ২৪ ঘণ্টার কম সময় লাগে।",
+  "staffQuickActions": "দ্রুত কাজ",
+  "staffComingSoon": "ইন্টারফেস প্রস্তুত — ব্যাকএন্ড এলে কল চালু হবে।",
+  "staffCall": "কল",
+  "staffMessage": "বার্তা",
+  "staffVideo": "ভিডিও কল",
+  "staffCompleted": "সম্পন্ন",
+  "staffNeedsAction": "ব্যবস্থা নিন",
+  "vendorConsoleEyebrow": "বিক্রেতা কনসোল",
+  "vendorConsoleSubtitle": "আজকের অর্ডার, স্টক আর গ্রাহক — সব এক জায়গায়।",
+  "vendorProductsSubtitle": "প্রতিটি পণ্যের দাম, স্টক ও ছবি।",
+  "vendorOrdersSubtitle": "গ্রহণ, পাঠানো ও ডেলিভারি — শুধু পরের সঠিক ধাপ।",
+  "vendorBusiness": "ব্যবসা",
+  "vendorBusinessSubtitle": "বিক্রি, লাভ, পেমেন্ট আর গ্রাহক খাতা।",
+  "vendorCustomerBook": "গ্রাহক",
+  "vendorCustomers": "মোট গ্রাহক",
+  "vendorRepeatCustomers": "ফিরে আসা ক্রেতা",
+  "vendorCustomerSearch": "নাম, মোবাইল বা জেলা খুঁজুন",
+  "vendorFollowUpCount": "{count} জন গ্রাহকের ফলোআপ দরকার",
+  "@vendorFollowUpCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorFollowUpBody": "একটি ছোট কলই ক্রেতাকে অন্য দোকানে যাওয়া থেকে ধরে রাখে।",
+  "vendorFollowUpHint": "এই গ্রাহককে ফলোআপ তালিকায় দেখান।",
+  "vendorMarkFollowUp": "ফলোআপ দরকার",
+  "vendorNoCustomers": "এখনো কোনো গ্রাহক নেই",
+  "vendorNoCustomersBody": "প্রথম অর্ডার ডেলিভারি হলে গ্রাহক এখানে দেখা যাবে।",
+  "vendorCustomerNote": "ব্যক্তিগত নোট",
+  "vendorNoteHint": "এই গ্রাহক সম্পর্কে দোকান কী মনে রাখবে?",
+  "vendorNoteSaved": "গ্রাহকের নোট সংরক্ষিত হয়েছে",
+  "vendorLifetimeValue": "মোট কেনাকাটা",
+  "vendorLastOrder": "শেষ অর্ডার",
+  "vendorOrdersCount": "{count}টি অর্ডার",
+  "@vendorOrdersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorSegmentNew": "নতুন",
+  "vendorSegmentRepeat": "ফিরে আসা",
+  "vendorSegmentLoyal": "নিয়মিত",
+  "vendorSegmentAtRisk": "ঝুঁকিতে",
+  "vendorMoney": "হিসাব",
+  "vendorRevenue30": "বিক্রি (৩০ দিন)",
+  "vendorProfit30": "লাভ (৩০ দিন)",
+  "vendorCommission": "প্ল্যাটফর্ম কমিশন",
+  "vendorPendingPayout": "পাওনা টাকা",
+  "vendorPayouts": "পেমেন্ট ইতিহাস",
+  "vendorPayoutPaid": "পরিশোধিত",
+  "vendorTopProducts": "সবচেয়ে বিক্রি হওয়া পণ্য",
+  "vendorUnits": "{units}টি ইউনিট",
+  "@vendorUnits": {
+    "placeholders": {
+      "units": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorWeekSales": "এই সপ্তাহের বিক্রি",
+  "vendorStoreVisits": "দোকান ভিজিট",
+  "vendorConversion": "কনভার্শন",
+  "vendorOrders30": "অর্ডার (৩০ দিন)",
+  "vendorReviewPending": "আপনার দোকান অনুমোদনের অপেক্ষায়। পণ্য প্রস্তুত করতে পারেন, তবে লাইসেন্স যাচাই না হলে কিছু প্রকাশ হবে না।",
+  "vendorPhotoLink": "ছবির লিংক",
+  "vendorPhotoHint": "https://… (ঐচ্ছিক)",
+  "vendorPhotoSoon": "ক্যামেরা আপলোড ব্যাকএন্ড এলে আসবে; এখন লিংক দিয়ে প্রিভিউ দেখা যায়।",
+  "vendorPhotoRemove": "ছবি সরান",
+  "expertHome": "হোম",
+  "expertConsoleEyebrow": "বিশেষজ্ঞ স্টুডিও",
+  "expertConsoleSubtitle": "আপনার লেখা, উত্তর আর পরামর্শই আপনার পরিচয় গড়ে।",
+  "expertFeed": "ফিড",
+  "expertQuestions": "প্রশ্ন",
+  "expertConsultations": "পরামর্শ",
+  "expertStudio": "স্টুডিও",
+  "expertStudioSubtitle": "রিভিউ, কৃষি বার্তা ও জ্ঞানভাণ্ডার।",
+  "expertQuestionsSubtitle": "কৃষকরা মানুষের উত্তর চাইছেন, লেখা নয়।",
+  "expertConsultationsSubtitle": "প্ল্যান, বুকিং আর বিশেষজ্ঞ নেটওয়ার্ক।",
+  "expertReviewsSubtitle": "কম আত্মবিশ্বাসের রোগ নির্ণয় আপনার কাছে।",
+  "expertNewsSubtitle": "কৃষি বার্তা যাচাই, সম্পাদনা ও প্রকাশ।",
+  "expertKnowledgeSubtitle": "প্রতিটি উত্তরের পেছনের যাচাই করা নির্দেশনা।",
+  "expertWrite": "লেখা লিখুন",
+  "expertArticleTitle": "শিরোনাম",
+  "expertArticleSummary": "এক লাইনের সারসংক্ষেপ",
+  "expertArticleBody": "পুরো লেখা",
+  "expertArticleCrop": "ফসল",
+  "expertArticlePublished": "লেখাটি কৃষকের ফিডে প্রকাশিত হয়েছে",
+  "expertMine": "আপনার",
+  "expertAllArticles": "সব",
+  "expertMyArticles": "আমার লেখা",
+  "expertSaved": "সংরক্ষিত",
+  "expertNoArticles": "এখানে এখনো কোনো লেখা নেই",
+  "expertNoArticlesBody": "প্রথম লেখাটি লিখুন — কৃষকরা কৃষি বার্তায় দেখবেন।",
+  "expertLike": "পছন্দ",
+  "expertUnlike": "পছন্দ সরান",
+  "expertSave": "সংরক্ষণ",
+  "expertUnsave": "সংরক্ষণ থেকে সরান",
+  "expertRateArticle": "লেখাটি রেট দিন",
+  "expertRateStars": "{stars} স্টার",
+  "@expertRateStars": {
+    "placeholders": {
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "expertRatingThanks": "ধন্যবাদ — আপনার রেটিং সংরক্ষিত হয়েছে।",
+  "expertCommentsCount": "মন্তব্য ({count})",
+  "@expertCommentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertNoComments": "এখনো কোনো মন্তব্য নেই। আলোচনা শুরু করুন।",
+  "expertAddComment": "মন্তব্য লিখুন",
+  "expertViewsCount": "{count} জন পড়েছেন",
+  "@expertViewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertReadArticle": "লেখা",
+  "expertPendingQuestions": "{count} জন কৃষক আপনার অপেক্ষায়",
+  "@expertPendingQuestions": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertAnswerNow": "এখনই উত্তর দিন",
+  "expertOpenTab": "খোলা ({count})",
+  "@expertOpenTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expertAnsweredTab": "উত্তর দেওয়া ({count})",
+  "@expertAnsweredTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expertNoQuestions": "কোনো খোলা প্রশ্ন নেই",
+  "expertNoQuestionsBody": "নতুন কৃষকের অনুরোধ এখানে আসবে। সাবস্ক্রাইবাররা অগ্রাধিকার পান।",
+  "expertAnswer": "উত্তর দিন",
+  "expertAnsweredNow": "উত্তর কৃষকের কাছে পাঠানো হয়েছে",
+  "expertReplyHint": "বাংলায় উত্তর দিন, পরের ধাপটি বলে দিন…",
+  "expertModeMessage": "বার্তা",
+  "expertModeCall": "কল",
+  "expertModeVideo": "ভিডিও",
+  "expertEditorialTools": "সম্পাদনার হাতিয়ার",
+  "expertReviewQueue": "রিভিউ কিউ",
+  "expertReviewQueueBody": "কম আত্মবিশ্বাসের রোগ নির্ণয়",
+  "expertNewsPipeline": "কৃষি বার্তা পাইপলাইন",
+  "expertNewsPipelineBody": "খসড়া, প্রকাশ ও প্রত্যাখ্যান",
+  "expertKnowledgeBase": "জ্ঞানভাণ্ডার",
+  "expertKnowledgeBody": "প্রতিটি নির্ণয়ের পেছনের নির্দেশনা",
+  "expertInbox": "আপনার ইনবক্স",
+  "expertTotalViews": "মোট পাঠ",
+  "expertEarnings": "আয়",
+  "expertSubscribers": "সাবস্ক্রাইবার",
+  "expertSubscribersCount": "{count} জন সাবস্ক্রাইবার",
+  "@expertSubscribersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertFollowers": "ফলোয়ার",
+  "expertFollowersCount": "{count} ফলোয়ার",
+  "@expertFollowersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertRating": "রেটিং",
+  "expertResponseTime": "উত্তরের সময়",
+  "expertMinutesShort": "{value} মিনিট",
+  "@expertMinutesShort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "expertMinutes": "{value} মিনিট",
+  "@expertMinutes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "expertPlans": "প্ল্যান",
+  "expertCalls": "কল",
+  "expertPerPeriod": "প্রতি {period}",
+  "@expertPerPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "expertPlanActive": "চালু",
+  "expertPlanPaused": "বন্ধ",
+  "expertJoinCall": "কলে যোগ দিন",
+  "expertNoCalls": "কোনো কল বুক হয়নি",
+  "expertNoCallsBody": "কৃষকরা আপনার প্রোফাইল থেকে কল বুক করতে পারেন।",
+  "expertNetwork": "বিশেষজ্ঞ নেটওয়ার্ক",
+  "expertConnect": "কানেক্ট",
+  "expertConnected": "সংযুক্ত",
+  "expertConnectNow": "সংযোগ করুন",
+  "adminOverview": "ওভারভিউ",
+  "adminConsoleEyebrow": "প্ল্যাটফর্ম নিয়ন্ত্রণ",
+  "adminConsoleSubtitle": "অনুমোদন, মানুষ, বাজার আর সিস্টেম — এক জায়গা থেকে।",
+  "adminApprovals": "অনুমোদন",
+  "adminApprovalBody": "প্রতিটি আবেদন, ২৪ ঘণ্টার প্রতিশ্রুতি সামনে রেখে।",
+  "adminSlaTitle": "২৪ ঘণ্টার মধ্যে যাচাই",
+  "adminSlaBody": "আপনি অনুমোদন না দিলে বিক্রেতা ও বিশেষজ্ঞ কাজ করতে পারেন না। কিউ পুরনো আগে।",
+  "adminVendorsTab": "বিক্রেতা",
+  "adminVendorApplications": "বিক্রেতার আবেদন",
+  "adminAccountApplications": "অ্যাকাউন্টের আবেদন",
+  "adminAccountApplication": "অ্যাকাউন্টের আবেদন",
+  "adminVendorApplication": "বিক্রেতার আবেদন",
+  "adminApprove": "অনুমোদন",
+  "adminPendingTotal": "কিউতে {count}টি আবেদন",
+  "@adminPendingTotal": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminApprovalFooter": "অনুমোদন দিলে অ্যাকাউন্ট সাথে সাথে চালু হয়। প্রত্যাখ্যানের কারণ আবেদনকারী দেখতে পান।",
+  "adminApprovedNow": "অনুমোদিত — অ্যাকাউন্ট চালু হয়েছে",
+  "adminRejectedNow": "আবেদন প্রত্যাখ্যাত হয়েছে",
+  "adminNoApprovals": "কিছু অপেক্ষা করছে না",
+  "adminNoApprovalsBody": "নতুন আবেদন এখানে দেখা যাবে।",
+  "adminApprovalsUnavailable": "অনুমোদনের তালিকাটি এখন লোড হয়নি",
+  "adminOpenApprovals": "অনুমোদন কিউ খুলুন",
+  "adminApprovalQueue": "অনুমোদন কিউ",
+  "adminPendingApprovalsCount": "{count}টি আবেদনে সিদ্ধান্ত দরকার",
+  "@adminPendingApprovalsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewWithin24h": "২৪ ঘণ্টার সীমা",
+  "adminAllClear": "আপনার কাছে কিছু অপেক্ষা করছে না",
+  "adminGmv": "মোট বিক্রি (৩০ দিন)",
+  "adminLast30Days": "৩০ দিন",
+  "adminCommissionEarned": "কমিশন আয়",
+  "adminActiveUsers": "সক্রিয় ব্যবহারকারী",
+  "adminNewUsers": "নতুন ব্যবহারকারী (৭ দিন)",
+  "adminPlatformHealth": "প্ল্যাটফর্মের গতি",
+  "adminNeedsAttention": "নজর দিন",
+  "adminAllSystemsOk": "সব সিস্টেম ঠিক আছে",
+  "adminAllSystemsOkBody": "প্রতিটি সক্রিয় সোর্স শেষ সংগ্রহ সফলভাবে করেছে।",
+  "adminSourceIssues": "{count}টি সংবাদ সোর্স ব্যর্থ হচ্ছে",
+  "@adminSourceIssues": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSourceIssuesBody": "সংগ্রহকারী আবার চেষ্টা করছে; ত্রুটির জন্য সোর্স কনসোল খুলুন।",
+  "adminManageSources": "সোর্স দেখুন",
+  "adminRecentActivity": "সাম্প্রতিক কার্যক্রম",
+  "adminMonitor": "মনিটর",
+  "adminMonitorSubtitle": "অর্ডার, ক্যাটালগ ও প্রকাশিত কনটেন্ট — না বলা পর্যন্ত শুধু দেখা।",
+  "adminOrders": "অর্ডার",
+  "adminCatalog": "ক্যাটালগ",
+  "adminContent": "কনটেন্ট",
+  "adminReadOnly": "শুধু মনিটরিং",
+  "adminReadOnlyBody": "অ্যাডমিন সব অর্ডার দেখতে পারেন, কিন্তু নিজে কিনতে পারেন না — কেনা শুধু কৃষকের জন্য।",
+  "adminCatalogNote": "প্রতিটি পণ্য, প্রতিটি দোকান",
+  "adminCatalogNoteBody": "নিয়ম ভাঙা পণ্য লুকান; দোকানের হিসাব থেকে যাবে।",
+  "adminContentNote": "প্রকাশিত কনটেন্ট",
+  "adminContentNoteBody": "ভুল বা অনিরাপদ সংবাদ সরিয়ে নিন। সার্ভার লেখককে জানাবে।",
+  "adminItems": "পণ্য",
+  "adminHidden": "লুকানো",
+  "adminHideProduct": "লুকান",
+  "adminShowProduct": "প্রকাশ",
+  "adminProductUpdated": "পণ্যের অবস্থা বদলানো হয়েছে",
+  "adminTakeDown": "সরিয়ে নিন",
+  "adminRestore": "ফিরিয়ে দিন",
+  "adminContentUpdated": "কনটেন্টের অবস্থা বদলানো হয়েছে",
+  "adminSystem": "সিস্টেম",
+  "adminSystemSubtitle": "প্ল্যাটফর্ম সেটিংস, সোর্স, লগ আর আপনার অ্যাকাউন্ট।",
+  "adminSettings": "প্ল্যাটফর্ম সেটিংস",
+  "adminCommissionPercent": "কমিশন (%)",
+  "adminCommissionHint": "প্রতিটি সম্পন্ন অর্ডারে, ০–৩০%।",
+  "adminCommissionInvalid": "০ থেকে ৩০ এর মধ্যে সংখ্যা দিন",
+  "adminAutoApproveFarmers": "কৃষক অ্যাকাউন্ট স্বয়ংক্রিয় অনুমোদন",
+  "adminAutoApproveFarmersHint": "কৃষকরা কিউ এড়িয়ে যাবেন; বিক্রেতা ও বিশেষজ্ঞরা কখনো নয়।",
+  "adminMaintenance": "মেইনটেন্যান্স মোড",
+  "adminMaintenanceHint": "অ্যাডমিন ছাড়া সবাইকে মেইনটেন্যান্স বার্তা দেখাবে।",
+  "adminSupportPhone": "সাপোর্ট নম্বর",
+  "adminBroadcast": "সবাইকে বার্তা",
+  "adminBroadcastHint": "আপনি মুছে না ফেলা পর্যন্ত কৃষকের হোমে দেখা যাবে।",
+  "adminSaveSettings": "সেটিংস সংরক্ষণ",
+  "adminSettingsSaved": "সেটিংস সংরক্ষিত হয়েছে",
+  "adminOperations": "অপারেশন",
+  "adminSourcesSubtitle": "সংগ্রহকারী কী পড়ে, কত ঘন ঘন।",
+  "adminLogsSubtitle": "প্রতিটি সিস্টেম, সংগ্রহ ও অডিট ঘটনা।",
+  "adminVendorApprovals": "বিক্রেতা অনুমোদন",
+  "adminVendorApprovalsSubtitle": "লাইসেন্স, স্থগিত ও পুনর্বহাল।",
+  "adminUsersSubtitle": "যেকোনো অ্যাকাউন্ট খুঁজুন, ফিল্টার করুন, ব্যবস্থা নিন।",
+  "advisoryTitle": "বিশেষজ্ঞ পরামর্শ",
+  "advisorySubtitle": "কৃষি বিশেষজ্ঞদের লেখা, যাচাই করা পরামর্শ।",
+  "homeTileAdvisory": "পরামর্শ পড়ুন",
+  "homeTileAdvisoryHint": "বিশেষজ্ঞদের লেখা",
+  "articleComments": "মন্তব্য",
+  "articleCommentHint": "আপনার মন্তব্য লিখুন",
+  "articleRate": "রেটিং দিন",
+  "articleRated": "ধন্যবাদ, রেটিং সংরক্ষিত হয়েছে",
+  "articleReads": "বার পড়া হয়েছে",
+  "articleNoComments": "এখনো কোনো মন্তব্য নেই।",
+  "askExpert": "বিশেষজ্ঞকে প্রশ্ন করুন",
+  "askExpertHint": "আপনার ফসলের সমস্যাটি বিস্তারিত লিখুন",
+  "askExpertSent": "প্রশ্ন পাঠানো হয়েছে। বিশেষজ্ঞ উত্তর দিলে জানানো হবে।",
+  "askExpertUrgent": "জরুরি",
+  "actionLike": "পছন্দ",
+  "actionUnlike": "পছন্দ সরান"
 }

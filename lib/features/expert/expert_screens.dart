@@ -22,7 +22,7 @@ import '../staff/staff_widgets.dart';
 /// (below the 0.70 floor) is routed here rather than shown to a farmer as an
 /// answer (FR-24, FR-25).
 final expertReviewsProvider = FutureProvider<List<ReviewCase>>(
-  (ref) async => ref.watch(expertRepositoryProvider).reviews(),
+  (ref) async => ref.watch(expertReviewRepositoryProvider).reviews(),
 );
 
 final expertNewsProvider = FutureProvider<List<NewsDraft>>(
@@ -248,7 +248,7 @@ class _ReviewCard extends ConsumerWidget {
     if (note == null) return;
     try {
       await ref
-          .read(expertRepositoryProvider)
+          .read(expertReviewRepositoryProvider)
           .needsRetake(item.id, note: note);
       ref.invalidate(expertReviewsProvider);
       if (context.mounted) {
@@ -360,11 +360,15 @@ class _ResolveSheetState extends ConsumerState<_ResolveSheet> {
     final id = _diseaseId;
     if (id == null) return;
     final l = AppL10n.of(context);
+    final available =
+        ref.read(_diseasesForCropProvider(widget.item.crop)).value ?? const [];
+    final selected = available.where((disease) => disease.id == id).firstOrNull;
     setState(() => _saving = true);
     try {
-      await ref.read(expertRepositoryProvider).resolve(
+      await ref.read(expertReviewRepositoryProvider).resolve(
             widget.item.id,
             diseaseId: id,
+            diseaseName: selected?.nameBn,
             note: _note.text.trim().isEmpty ? null : _note.text.trim(),
           );
       if (mounted) Navigator.of(context).pop(true);

@@ -8,6 +8,7 @@ import '../models/product.dart';
 import '../repositories/admin_repository.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/expert_repository.dart';
+import '../repositories/expert_review_repository.dart';
 import '../repositories/vendor_repository.dart';
 import 'admin_seed.dart';
 import 'growth_seed.dart';
@@ -314,7 +315,7 @@ class MockVendorRepository implements VendorRepository {
 }
 
 /// Expert desk: the review queue, the news pipeline and the knowledge base.
-class MockExpertRepository implements ExpertRepository {
+class MockExpertRepository implements ExpertRepository, ExpertReviewRepository {
   MockExpertRepository({MockConfig? config})
       : _config = config ?? MockConfig(),
         _cases = expertReviewSeed(_nowIsoMock())
@@ -371,6 +372,7 @@ class MockExpertRepository implements ExpertRepository {
   Future<ReviewCase> resolve(
     String reviewId, {
     required String diseaseId,
+    String? diseaseName,
     String? note,
   }) async {
     await _tick(_config);
@@ -388,7 +390,7 @@ class MockExpertRepository implements ExpertRepository {
         resolved: true,
         top3: c.top3,
         resolutionDiseaseId: diseaseId,
-        resolutionDiseaseName: disease['name_bn'] as String,
+        resolutionDiseaseName: diseaseName ?? disease['name_bn'] as String,
         note: note,
       ),
     );
@@ -908,6 +910,26 @@ class MockAdminRepository implements AdminRepository {
     );
     _users[index] = updated;
     return updated;
+  }
+
+  @override
+  Future<String> resetUserPassword(String userId, {String? reason}) async {
+    await _tick(_config);
+    final index = _users.indexWhere((u) => u.id == userId);
+    if (index < 0) {
+      throw const ApiException(code: 'not_found', messageKey: 'stateErrorBody');
+    }
+    final user = _users[index];
+    _logs.insert(
+      0,
+      OpsLogEntry(
+        id: 'log-${DateTime.now().microsecondsSinceEpoch}',
+        type: OpsLogType.audit,
+        message: 'অ্যাডমিন “${user.name}”-এর পাসওয়ার্ড রিসেট করেছেন।',
+        at: DateTime.now(),
+      ),
+    );
+    return 'AgTemp-${user.id.substring(0, 4)}-9!';
   }
 
   @override

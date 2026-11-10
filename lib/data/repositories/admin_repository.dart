@@ -27,6 +27,13 @@ abstract interface class AdminRepository {
     String? reason,
   });
 
+  /// Reissues a temporary password for an account and returns it once.
+  ///
+  /// This is the recovery path for someone who cannot sign in: the reset flow
+  /// fails closed until an SMS channel exists. The value must be shown to the
+  /// user and never stored — only its hash is kept server-side.
+  Future<String> resetUserPassword(String userId, {String? reason});
+
   Future<List<ManagedNewsSource>> sources();
 
   Future<ManagedNewsSource> saveSource(ManagedNewsSource source);

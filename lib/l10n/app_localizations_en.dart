@@ -249,6 +249,27 @@ class AppL10nEn extends AppL10n {
   String get registerPasswordRule => 'Use at least 8 characters.';
 
   @override
+  String get registerPasswordWeak =>
+      'Password must not be only numbers. Mix letters and numbers.';
+
+  @override
+  String get registerPasswordCommon =>
+      'That password is too common. Choose something harder to guess.';
+
+  @override
+  String get registerPasswordHasMobile =>
+      'Password must not contain your mobile number.';
+
+  @override
+  String get registerNameRequired => 'Please enter your name.';
+
+  @override
+  String get registerMobileRequired => 'Enter a valid 11-digit mobile number.';
+
+  @override
+  String get registerDistrictRequired => 'Please choose your district.';
+
+  @override
   String get registerSubmit => 'Create account';
 
   @override
@@ -288,6 +309,46 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get otpInvalid => 'That code is not right. Please check it.';
+
+  @override
+  String get phoneRegistered => 'An account already exists for this number.';
+
+  @override
+  String get resetRequestBody =>
+      'Enter your mobile number. In development, the reset code is printed in the API server log.';
+
+  @override
+  String get resetRequestAction => 'Request reset code';
+
+  @override
+  String resetCodeSent(String mobile) {
+    return 'A reset code was issued for $mobile';
+  }
+
+  @override
+  String get resetCodeLabel => 'Reset code';
+
+  @override
+  String get resetCodeHint => 'Code from the API server log';
+
+  @override
+  String get resetSubmit => 'Reset password';
+
+  @override
+  String get resetInvalid => 'That code is invalid or expired.';
+
+  @override
+  String get resetRequestFailed => 'Could not request a reset code. Try again.';
+
+  @override
+  String get resetDoneTitle => 'Password updated';
+
+  @override
+  String get resetDoneBody => 'Sign in with your new password.';
+
+  @override
+  String get resetDevNote =>
+      'In development, the reset code is in the API server log.';
 
   @override
   String get pendingTitle => 'Waiting for approval';
@@ -386,13 +447,13 @@ class AppL10nEn extends AppL10n {
   String get homeTileAsk => 'Ask by voice';
 
   @override
-  String get homeTileAskHint => 'Ask a question in Bangla';
+  String get homeTileAskHint => 'Speak a question, hear the answer';
 
   @override
   String get homeTileAdvice => 'Crop advice';
 
   @override
-  String get homeTileAdviceHint => 'What to plant this season';
+  String get homeTileAdviceHint => 'By soil and season';
 
   @override
   String get homeTileWeather => 'Weather';
@@ -526,6 +587,13 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get diagnosisLowTitle => 'Not sure enough';
+
+  @override
+  String get diagnosisNotLeafTitle => 'This is not a crop leaf';
+
+  @override
+  String get diagnosisNotLeafBody =>
+      'We could not find a crop leaf in this photo. Move closer to the affected leaf, use good light, and keep the photo sharp.';
 
   @override
   String get diagnosisLowBody =>
@@ -803,6 +871,15 @@ class AppL10nEn extends AppL10n {
   String get newsCategoryNutrient => 'Nutrient deficiency';
 
   @override
+  String get newsCategoryWeather => 'Weather';
+
+  @override
+  String get newsCategoryMarket => 'Market price';
+
+  @override
+  String get newsCategoryAdvisory => 'Advisory';
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override
@@ -846,4 +923,1453 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get homeSkyRain => 'A rainy sky today';
+
+  @override
+  String get voiceNoSpeech =>
+      'Voice cannot be used on this device. Type below, or use the buttons.';
+
+  @override
+  String get voiceTypeInstead => 'Can\'t speak? Type it here';
+
+  @override
+  String voiceOpening(String screen) {
+    return 'Opening $screen';
+  }
+
+  @override
+  String get voiceAnswerTitle => 'AI answer';
+
+  @override
+  String get voiceChooseProduct => 'Which product? Pick one below';
+
+  @override
+  String voiceFound(String term, String count) {
+    return '$term: $count found';
+  }
+
+  @override
+  String voiceWeatherSummary(String district, String temp, String condition) {
+    return 'Today in $district: $temp degrees, $condition';
+  }
+
+  @override
+  String voicePriceLine(String name, String price) {
+    return '$name, $price';
+  }
+
+  @override
+  String voicePlaceOrder(String product, String qty) {
+    return 'I will order $qty of $product. Confirm if that is right.';
+  }
+
+  @override
+  String get voiceConfirmYes => 'Yes, place the order';
+
+  @override
+  String get adviceTitle => 'Crop advice';
+
+  @override
+  String get adviceIntro =>
+      'Tell me the soil and the season — I will match your district\'s weather and suggest three crops.';
+
+  @override
+  String get adviceSoil => 'Soil type';
+
+  @override
+  String get adviceSeason => 'Season';
+
+  @override
+  String get adviceSeasonAuto => 'This month\'s season';
+
+  @override
+  String get adviceDistrict => 'District';
+
+  @override
+  String get adviceAction => 'Get advice';
+
+  @override
+  String get adviceResultsTitle => 'Three crops for you';
+
+  @override
+  String get adviceWeatherIncluded => 'Your district\'s weather was included';
+
+  @override
+  String get adviceWeatherMissing =>
+      'Weather could not be included — soil and season only';
+
+  @override
+  String adviceRank(String rank) {
+    return 'Rank $rank';
+  }
+
+  @override
+  String get adviceCalendar => 'Seasonal calendar';
+
+  @override
+  String get adviceSavedTitle => 'Earlier advice';
+
+  @override
+  String get adviceSavedEmpty => 'No advice has been taken yet.';
+
+  @override
+  String get adviceIntroShort => 'Pick a soil type, then get advice.';
+
+  @override
+  String get calendarTitle => 'Seasonal calendar';
+
+  @override
+  String get calendarPlanting => 'Sowing / planting';
+
+  @override
+  String get calendarHarvest => 'Harvest';
+
+  @override
+  String get calendarLegend => 'Shaded months have work in them';
+
+  @override
+  String get calendarEmpty => 'No calendar has been added for this crop yet.';
+
+  @override
+  String calendarMonth(String month) {
+    return 'Month $month';
+  }
+
+  @override
+  String get assistantTitle => 'Farming assistant';
+
+  @override
+  String get assistantIntro =>
+      'Ask anything about crop disease, fertiliser or pests. Answers come from the verified knowledge base.';
+
+  @override
+  String get assistantAsk => 'Type your question';
+
+  @override
+  String get assistantMicHint => 'Speak your question';
+
+  @override
+  String get assistantListening => 'Listening…';
+
+  @override
+  String get assistantThinking => 'Looking for an answer…';
+
+  @override
+  String get assistantSources => 'Sources';
+
+  @override
+  String get assistantNoAnswerTitle => 'I do not have that answer';
+
+  @override
+  String get assistantNoAnswerBody =>
+      'I will not guess. Send it to an expert and an agronomist will reply.';
+
+  @override
+  String get assistantOfferExpert => 'Send to an expert';
+
+  @override
+  String get assistantSentToExpert =>
+      'Your question has been sent to an expert.';
+
+  @override
+  String get assistantHistoryTitle => 'Earlier questions';
+
+  @override
+  String get assistantHistoryEmpty => 'No questions asked yet.';
+
+  @override
+  String assistantYouAsked(String question) {
+    return 'You asked: $question';
+  }
+
+  @override
+  String get adviceDisclaimer =>
+      'This is advice, not a final recommendation. Check your own soil before deciding.';
+
+  @override
+  String get actionEdit => 'Edit';
+
+  @override
+  String get actionDelete => 'Delete';
+
+  @override
+  String get vendorAddProduct => 'Add product';
+
+  @override
+  String get vendorEditProduct => 'Edit product';
+
+  @override
+  String get vendorProductName => 'Product name';
+
+  @override
+  String get vendorProductNameBn => 'Name (Bangla)';
+
+  @override
+  String get vendorProductCategory => 'Category';
+
+  @override
+  String get vendorProductPrice => 'Price (taka)';
+
+  @override
+  String get vendorProductStock => 'Stock';
+
+  @override
+  String get vendorProductDescription => 'Description';
+
+  @override
+  String get vendorProductSaved => 'Product saved';
+
+  @override
+  String get vendorProductDeleted => 'Product removed';
+
+  @override
+  String get vendorFieldRequired => 'This field is required.';
+
+  @override
+  String get vendorPriceInvalid => 'Price must be more than zero.';
+
+  @override
+  String get vendorStockInvalid => 'Stock must be zero or more.';
+
+  @override
+  String get vendorLowStock => 'Low stock';
+
+  @override
+  String get vendorOutOfStock => 'Out of stock';
+
+  @override
+  String get vendorStockMinus => 'Decrease by one';
+
+  @override
+  String get vendorStockPlus => 'Increase by one';
+
+  @override
+  String get vendorStockFine => 'Every product is well stocked.';
+
+  @override
+  String get vendorLowStockTitle => 'Stock to watch';
+
+  @override
+  String get vendorNoProducts => 'No products yet';
+
+  @override
+  String get vendorNoProductsBody =>
+      'Add your first product and farmers will see it in Haat Bazar.';
+
+  @override
+  String get vendorVerifiedHint =>
+      'Your shop is verified — you can list products.';
+
+  @override
+  String get vendorBlockedBody =>
+      'You can list products and accept orders once an admin has verified the shop.';
+
+  @override
+  String get vendorInvalidTransition => 'That step is not possible yet.';
+
+  @override
+  String get vendorTodayOrders => 'Today\'s orders';
+
+  @override
+  String get vendorTodayRevenue => 'Today\'s revenue';
+
+  @override
+  String get vendorPendingOrders => 'Pending orders';
+
+  @override
+  String get vendorRatingsTitle => 'Buyer ratings';
+
+  @override
+  String get vendorRecentOrders => 'Recent orders';
+
+  @override
+  String get vendorNoOrders => 'No orders yet';
+
+  @override
+  String get vendorNoOrdersBody => 'Orders from farmers will appear here.';
+
+  @override
+  String get vendorOrderUpdated => 'Order status updated';
+
+  @override
+  String get vendorAcceptOrder => 'Accept order';
+
+  @override
+  String get vendorRejectOrder => 'Reject';
+
+  @override
+  String get vendorShipOrder => 'Mark shipped';
+
+  @override
+  String get vendorDeliverOrder => 'Mark delivered';
+
+  @override
+  String get vendorRejectTitle => 'Why is this order rejected?';
+
+  @override
+  String get vendorRejectHint => 'e.g. the item is out of stock';
+
+  @override
+  String expertTabPending(String count) {
+    return 'Waiting ($count)';
+  }
+
+  @override
+  String expertTabResolved(String count) {
+    return 'Done ($count)';
+  }
+
+  @override
+  String get expertQueueEmpty => 'Nothing waiting for review';
+
+  @override
+  String get expertQueueEmptyBody => 'Uncertain photos will show up here.';
+
+  @override
+  String get expertResolved => 'Done';
+
+  @override
+  String get expertNeedsRetake => 'Needs a new photo';
+
+  @override
+  String get expertAiGuess => 'AI\'s guess (the farmer never sees this)';
+
+  @override
+  String get expertConfirmDisease => 'Confirm the disease';
+
+  @override
+  String get expertPickDisease => 'Which disease is it?';
+
+  @override
+  String get expertHealthy => 'Healthy';
+
+  @override
+  String get expertNote => 'Note for the farmer';
+
+  @override
+  String get expertCropUnknown => 'Crop unknown';
+
+  @override
+  String get expertRetakeTitle => 'What should the farmer do?';
+
+  @override
+  String get expertRetakeHint =>
+      'e.g. take a clear photo of one leaf in daylight';
+
+  @override
+  String get expertSend => 'Send';
+
+  @override
+  String get expertRequestSent => 'The farmer was told';
+
+  @override
+  String get expertNewsEmpty => 'Nothing in this list';
+
+  @override
+  String get expertNewsEmptyBody => 'New drafts will appear here.';
+
+  @override
+  String get draftNeedsWriting => 'Needs writing';
+
+  @override
+  String get draftInProgress => 'Draft';
+
+  @override
+  String get draftPublished => 'Published';
+
+  @override
+  String get draftRejected => 'Rejected';
+
+  @override
+  String get expertAddManual => 'Write a news item';
+
+  @override
+  String get expertDraftCreated => 'Draft created';
+
+  @override
+  String get expertSuggestSource => 'Suggest a source';
+
+  @override
+  String get expertSourceSuggested => 'Suggestion sent to the admin';
+
+  @override
+  String get expertSourceName => 'Source name';
+
+  @override
+  String get expertSourceUrl => 'Website';
+
+  @override
+  String get expertSourceNote => 'Why it is useful (note)';
+
+  @override
+  String get expertSendSuggestion => 'Send suggestion';
+
+  @override
+  String get expertUrgent => 'Urgent';
+
+  @override
+  String get expertEditNews => 'Edit news item';
+
+  @override
+  String get expertNewsTitle => 'Title';
+
+  @override
+  String get expertNewsSummary => 'Summary';
+
+  @override
+  String get expertNewsSymptoms => 'Symptoms';
+
+  @override
+  String get expertNewsAction => 'What the farmer should do';
+
+  @override
+  String get expertNewsSource => 'Source';
+
+  @override
+  String get expertNewsCrop => 'Crop';
+
+  @override
+  String get expertNewsCategory => 'Category';
+
+  @override
+  String get expertNewsSeverity => 'Severity';
+
+  @override
+  String get expertSaveDraft => 'Save draft';
+
+  @override
+  String get expertPublish => 'Publish';
+
+  @override
+  String get expertPublishUrgent => 'Publish as urgent';
+
+  @override
+  String get expertPublishTitle => 'How should this be published?';
+
+  @override
+  String get expertPublishBody =>
+      'Urgent items are pushed to farmers\' phones.';
+
+  @override
+  String get expertPublished => 'Published';
+
+  @override
+  String get expertReject => 'Reject';
+
+  @override
+  String get expertRejectTitle => 'Why is it rejected?';
+
+  @override
+  String get expertRejectHint => 'e.g. the source does not support this';
+
+  @override
+  String get expertRejected => 'Rejected';
+
+  @override
+  String get expertKnowledgeSearch => 'Search a disease or a protocol';
+
+  @override
+  String get expertKnowledgeEmpty => 'Nothing in the knowledge base';
+
+  @override
+  String get expertKnowledgeEmptyBody =>
+      'Try another word, or wait for new entries.';
+
+  @override
+  String get expertKnowledgeEditTitle => 'Edit knowledge entry';
+
+  @override
+  String get expertKnowledgeProtocol => 'Treatment protocol';
+
+  @override
+  String get expertKnowledgeSource => 'Source (BRRI, DAE…)';
+
+  @override
+  String get expertKnowledgeSafety => 'Safety note';
+
+  @override
+  String get expertKnowledgeReindex =>
+      'Saved — the change is being added to the search index.';
+
+  @override
+  String get accountStatusActive => 'Active';
+
+  @override
+  String get accountStatusPending => 'Pending approval';
+
+  @override
+  String get accountStatusSuspended => 'Suspended';
+
+  @override
+  String get accountStatusRemoved => 'Removed';
+
+  @override
+  String get vendorPendingReview => 'Awaiting approval';
+
+  @override
+  String get vendorRejected => 'Rejected';
+
+  @override
+  String get vendorSuspended => 'Suspended';
+
+  @override
+  String get adminLicense => 'Trade licence';
+
+  @override
+  String get adminVerify => 'Verify';
+
+  @override
+  String get adminReject => 'Reject';
+
+  @override
+  String get adminSuspend => 'Suspend';
+
+  @override
+  String get adminResetPassword => 'Reset password';
+
+  @override
+  String get adminResetPasswordBody =>
+      'This temporary password is shown once. Give it to the user and ask them to change it after signing in.';
+
+  @override
+  String get adminReinstate => 'Reinstate';
+
+  @override
+  String get adminRejectTitle => 'Why is it rejected?';
+
+  @override
+  String get adminSuspendTitle => 'Why is it suspended?';
+
+  @override
+  String get adminReasonHint => 'The user will be told this reason';
+
+  @override
+  String get adminVendorUpdated => 'Vendor status updated';
+
+  @override
+  String get adminVendorEmpty => 'No vendors in this list';
+
+  @override
+  String get adminVendorEmptyBody => 'Try another status.';
+
+  @override
+  String get adminUserSearch => 'Name, mobile or district';
+
+  @override
+  String get adminUserEmpty => 'No accounts match';
+
+  @override
+  String get adminUserEmptyBody => 'Change the search or the filters.';
+
+  @override
+  String get adminActivate => 'Activate';
+
+  @override
+  String get adminUserUpdated => 'Account status updated';
+
+  @override
+  String get adminSourceEmpty => 'No sources added';
+
+  @override
+  String get adminSourceEmptyBody =>
+      'Add a news source and collection can start.';
+
+  @override
+  String get adminAddSource => 'Add source';
+
+  @override
+  String get adminEditSource => 'Edit source';
+
+  @override
+  String get adminSourceName => 'Source name';
+
+  @override
+  String get adminSourceUrl => 'Feed URL';
+
+  @override
+  String get adminSourceUrlInvalid => 'The URL must start with http.';
+
+  @override
+  String get adminSourceType => 'Source type';
+
+  @override
+  String get adminSourceSaved => 'Source saved';
+
+  @override
+  String get adminSourceOn => 'Collection on';
+
+  @override
+  String get adminSourceOff => 'Collection off';
+
+  @override
+  String get adminSourceNeverRun => 'Never collected';
+
+  @override
+  String get adminSourceFailed => 'Last collection failed';
+
+  @override
+  String get adminSourceDeleteTitle => 'Remove this source?';
+
+  @override
+  String get adminSourceRemoved => 'Source removed';
+
+  @override
+  String get adminScheduleTitle => 'Collection schedule';
+
+  @override
+  String get adminScheduleEnabled => 'Collect automatically';
+
+  @override
+  String get adminScheduleSaved => 'Schedule saved';
+
+  @override
+  String get adminIntervalUp => 'Longer interval';
+
+  @override
+  String get adminIntervalDown => 'Shorter interval';
+
+  @override
+  String get adminRunNow => 'Collect now';
+
+  @override
+  String get adminRunDone => 'Collection finished';
+
+  @override
+  String get adminLogsEmpty => 'No logs of this kind';
+
+  @override
+  String get adminLogsEmptyBody => 'Try another type.';
+
+  @override
+  String get logTypeSystem => 'System';
+
+  @override
+  String get logTypeCollection => 'Collection';
+
+  @override
+  String get logTypeVoice => 'Voice';
+
+  @override
+  String get logTypeAiFallback => 'AI fallback';
+
+  @override
+  String get logTypeAudit => 'Audit';
+
+  @override
+  String get sourceTypeGovernment => 'Government';
+
+  @override
+  String get sourceTypeResearch => 'Research';
+
+  @override
+  String get sourceTypeNewsPortal => 'News portal';
+
+  @override
+  String get vendorDeleteTitle => 'Remove product?';
+
+  @override
+  String vendorStockLeft(String count) {
+    return 'Stock $count';
+  }
+
+  @override
+  String vendorRatingAverage(String rating, String count) {
+    return 'Average $rating · $count ratings';
+  }
+
+  @override
+  String expertKnowledgeVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String adminSubmitted(String date) {
+    return 'Submitted $date';
+  }
+
+  @override
+  String adminSourceLastRun(String time) {
+    return 'Last collected $time';
+  }
+
+  @override
+  String adminSourceDeleteConfirm(String name) {
+    return '$name will no longer be collected.';
+  }
+
+  @override
+  String adminScheduleInterval(String hours) {
+    return 'Every $hours hours';
+  }
+
+  @override
+  String adminScheduleNext(String time) {
+    return 'Next run $time';
+  }
+
+  @override
+  String vendorDeleteConfirm(String name) {
+    return '$name will be removed. Past orders keep their record.';
+  }
+
+  @override
+  String get pendingPromise =>
+      'Your request is being reviewed — we will let you know within 24 hours.';
+
+  @override
+  String get pendingStepSubmitted => 'Application received';
+
+  @override
+  String get pendingStepReview => 'An admin is reviewing it';
+
+  @override
+  String get pendingStepReviewBody => 'Usually within 24 hours.';
+
+  @override
+  String get pendingStepLive => 'Account activated';
+
+  @override
+  String get registerApprovalNote =>
+      'Every new account is checked by an admin before it goes live. This usually takes under 24 hours.';
+
+  @override
+  String get staffQuickActions => 'Quick actions';
+
+  @override
+  String get staffComingSoon =>
+      'The interface is ready — calling arrives with the backend.';
+
+  @override
+  String get staffCall => 'Call';
+
+  @override
+  String get staffMessage => 'Message';
+
+  @override
+  String get staffVideo => 'Video call';
+
+  @override
+  String get staffCompleted => 'Completed';
+
+  @override
+  String get staffNeedsAction => 'Needs action';
+
+  @override
+  String get vendorConsoleEyebrow => 'Vendor console';
+
+  @override
+  String get vendorConsoleSubtitle =>
+      'Today\'s orders, stock and customers — all in one place.';
+
+  @override
+  String get vendorProductsSubtitle =>
+      'Price, stock and photos for every listing.';
+
+  @override
+  String get vendorOrdersSubtitle =>
+      'Accept, ship and deliver — only the next valid step.';
+
+  @override
+  String get vendorBusiness => 'Business';
+
+  @override
+  String get vendorBusinessSubtitle =>
+      'Sales, profit, payouts and your customer book.';
+
+  @override
+  String get vendorCustomerBook => 'Customers';
+
+  @override
+  String get vendorCustomers => 'Total customers';
+
+  @override
+  String get vendorRepeatCustomers => 'Repeat buyers';
+
+  @override
+  String get vendorCustomerSearch => 'Search name, mobile or district';
+
+  @override
+  String vendorFollowUpCount(String count) {
+    return '$count customers need a follow-up';
+  }
+
+  @override
+  String get vendorFollowUpBody =>
+      'A quick call keeps a buyer from drifting to another shop.';
+
+  @override
+  String get vendorFollowUpHint => 'Show this customer in the follow-up list.';
+
+  @override
+  String get vendorMarkFollowUp => 'Follow-up needed';
+
+  @override
+  String get vendorNoCustomers => 'No customers yet';
+
+  @override
+  String get vendorNoCustomersBody =>
+      'A customer appears here after their first delivered order.';
+
+  @override
+  String get vendorCustomerNote => 'Private note';
+
+  @override
+  String get vendorNoteHint =>
+      'What should the shop remember about this customer?';
+
+  @override
+  String get vendorNoteSaved => 'Customer note saved';
+
+  @override
+  String get vendorLifetimeValue => 'Lifetime value';
+
+  @override
+  String get vendorLastOrder => 'Last order';
+
+  @override
+  String vendorOrdersCount(String count) {
+    return '$count orders';
+  }
+
+  @override
+  String get vendorSegmentNew => 'New';
+
+  @override
+  String get vendorSegmentRepeat => 'Returning';
+
+  @override
+  String get vendorSegmentLoyal => 'Loyal';
+
+  @override
+  String get vendorSegmentAtRisk => 'At risk';
+
+  @override
+  String get vendorMoney => 'Money';
+
+  @override
+  String get vendorRevenue30 => 'Revenue (30 days)';
+
+  @override
+  String get vendorProfit30 => 'Profit (30 days)';
+
+  @override
+  String get vendorCommission => 'Platform commission';
+
+  @override
+  String get vendorPendingPayout => 'Pending payout';
+
+  @override
+  String get vendorPayouts => 'Payout history';
+
+  @override
+  String get vendorPayoutPaid => 'Paid';
+
+  @override
+  String get vendorTopProducts => 'Best sellers';
+
+  @override
+  String vendorUnits(String units) {
+    return '$units units';
+  }
+
+  @override
+  String get vendorWeekSales => 'Sales this week';
+
+  @override
+  String get vendorStoreVisits => 'Store visits';
+
+  @override
+  String get vendorConversion => 'Conversion';
+
+  @override
+  String get vendorOrders30 => 'Orders (30 days)';
+
+  @override
+  String get vendorReviewPending =>
+      'Your shop is in the approval queue. You can prepare listings, but nothing goes live until an admin verifies the licence.';
+
+  @override
+  String get vendorPhotoLink => 'Photo link';
+
+  @override
+  String get vendorPhotoHint => 'https://… (optional)';
+
+  @override
+  String get vendorPhotoSoon =>
+      'Upload from the camera arrives with the backend; a link previews now.';
+
+  @override
+  String get vendorPhotoRemove => 'Remove photo';
+
+  @override
+  String get expertHome => 'Home';
+
+  @override
+  String get expertConsoleEyebrow => 'Expert studio';
+
+  @override
+  String get expertConsoleSubtitle =>
+      'Your writing, answers and consultations build your reputation.';
+
+  @override
+  String get expertFeed => 'Feed';
+
+  @override
+  String get expertQuestions => 'Questions';
+
+  @override
+  String get expertConsultations => 'Consultations';
+
+  @override
+  String get expertStudio => 'Studio';
+
+  @override
+  String get expertStudioSubtitle =>
+      'Reviews, Krishi Barta and the knowledge base.';
+
+  @override
+  String get expertQuestionsSubtitle =>
+      'Farmers waiting for a person, not an article.';
+
+  @override
+  String get expertConsultationsSubtitle =>
+      'Plans, bookings and your expert network.';
+
+  @override
+  String get expertReviewsSubtitle => 'Low-confidence diagnoses routed to you.';
+
+  @override
+  String get expertNewsSubtitle => 'Review, edit and publish Krishi Barta.';
+
+  @override
+  String get expertKnowledgeSubtitle =>
+      'The verified protocol behind every answer.';
+
+  @override
+  String get expertWrite => 'Write an article';
+
+  @override
+  String get expertArticleTitle => 'Title';
+
+  @override
+  String get expertArticleSummary => 'One-line summary';
+
+  @override
+  String get expertArticleBody => 'Full article';
+
+  @override
+  String get expertArticleCrop => 'Crop';
+
+  @override
+  String get expertArticlePublished => 'Article published to the farmer feed';
+
+  @override
+  String get expertMine => 'Yours';
+
+  @override
+  String get expertAllArticles => 'All';
+
+  @override
+  String get expertMyArticles => 'My articles';
+
+  @override
+  String get expertSaved => 'Saved';
+
+  @override
+  String get expertNoArticles => 'No articles here yet';
+
+  @override
+  String get expertNoArticlesBody =>
+      'Write the first one — farmers see it in Krishi Barta.';
+
+  @override
+  String get expertLike => 'Like';
+
+  @override
+  String get expertUnlike => 'Remove like';
+
+  @override
+  String get expertSave => 'Save';
+
+  @override
+  String get expertUnsave => 'Remove from saved';
+
+  @override
+  String get expertRateArticle => 'Rate this article';
+
+  @override
+  String expertRateStars(int stars) {
+    return '$stars star';
+  }
+
+  @override
+  String get expertRatingThanks => 'Thanks — your rating was recorded.';
+
+  @override
+  String expertCommentsCount(String count) {
+    return 'Comments ($count)';
+  }
+
+  @override
+  String get expertNoComments => 'No comments yet. Start the conversation.';
+
+  @override
+  String get expertAddComment => 'Write a comment';
+
+  @override
+  String expertViewsCount(String count) {
+    return '$count views';
+  }
+
+  @override
+  String get expertReadArticle => 'Article';
+
+  @override
+  String expertPendingQuestions(String count) {
+    return '$count farmers are waiting for you';
+  }
+
+  @override
+  String get expertAnswerNow => 'Answer now';
+
+  @override
+  String expertOpenTab(int count) {
+    return 'Open ($count)';
+  }
+
+  @override
+  String expertAnsweredTab(int count) {
+    return 'Answered ($count)';
+  }
+
+  @override
+  String get expertNoQuestions => 'No open questions';
+
+  @override
+  String get expertNoQuestionsBody =>
+      'New farmer requests land here. Subscribers get priority.';
+
+  @override
+  String get expertAnswer => 'Write an answer';
+
+  @override
+  String get expertAnsweredNow => 'Answer sent to the farmer';
+
+  @override
+  String get expertReplyHint =>
+      'Answer in Bangla, with the next step they should take…';
+
+  @override
+  String get expertModeMessage => 'Message';
+
+  @override
+  String get expertModeCall => 'Call';
+
+  @override
+  String get expertModeVideo => 'Video';
+
+  @override
+  String get expertEditorialTools => 'Editorial tools';
+
+  @override
+  String get expertReviewQueue => 'Review queue';
+
+  @override
+  String get expertReviewQueueBody => 'Low-confidence diagnoses';
+
+  @override
+  String get expertNewsPipeline => 'Krishi Barta pipeline';
+
+  @override
+  String get expertNewsPipelineBody => 'Drafts, publishing and rejections';
+
+  @override
+  String get expertKnowledgeBase => 'Knowledge base';
+
+  @override
+  String get expertKnowledgeBody => 'Protocols behind every diagnosis';
+
+  @override
+  String get expertInbox => 'Your inbox';
+
+  @override
+  String get expertTotalViews => 'Total reads';
+
+  @override
+  String get expertEarnings => 'Earnings';
+
+  @override
+  String get expertSubscribers => 'Subscribers';
+
+  @override
+  String expertSubscribersCount(String count) {
+    return '$count subscribers';
+  }
+
+  @override
+  String get expertFollowers => 'Followers';
+
+  @override
+  String expertFollowersCount(String count) {
+    return '$count followers';
+  }
+
+  @override
+  String get expertRating => 'Rating';
+
+  @override
+  String get expertResponseTime => 'Reply time';
+
+  @override
+  String expertMinutesShort(String value) {
+    return '$value min';
+  }
+
+  @override
+  String expertMinutes(String value) {
+    return '$value min';
+  }
+
+  @override
+  String get expertPlans => 'Plans';
+
+  @override
+  String get expertCalls => 'Calls';
+
+  @override
+  String expertPerPeriod(String period) {
+    return 'per $period';
+  }
+
+  @override
+  String get expertPlanActive => 'Live';
+
+  @override
+  String get expertPlanPaused => 'Paused';
+
+  @override
+  String get expertJoinCall => 'Join call';
+
+  @override
+  String get expertNoCalls => 'No calls booked';
+
+  @override
+  String get expertNoCallsBody => 'Farmers can book a call from your profile.';
+
+  @override
+  String get expertNetwork => 'Expert network';
+
+  @override
+  String get expertConnect => 'Connect';
+
+  @override
+  String get expertConnected => 'Connected';
+
+  @override
+  String get expertConnectNow => 'Connect now';
+
+  @override
+  String get adminOverview => 'Overview';
+
+  @override
+  String get adminConsoleEyebrow => 'Platform control';
+
+  @override
+  String get adminConsoleSubtitle =>
+      'Approvals, people, the market and the system — from one place.';
+
+  @override
+  String get adminApprovals => 'Approvals';
+
+  @override
+  String get adminApprovalBody =>
+      'Every application, with the 24-hour promise visible.';
+
+  @override
+  String get adminSlaTitle => 'Review within 24 hours';
+
+  @override
+  String get adminSlaBody =>
+      'Vendors and experts cannot trade until you approve them. The queue is oldest-first.';
+
+  @override
+  String get adminVendorsTab => 'Vendors';
+
+  @override
+  String get adminVendorApplications => 'Vendor applications';
+
+  @override
+  String get adminAccountApplications => 'Account applications';
+
+  @override
+  String get adminAccountApplication => 'Account application';
+
+  @override
+  String get adminVendorApplication => 'Vendor application';
+
+  @override
+  String get adminApprove => 'Approve';
+
+  @override
+  String adminPendingTotal(String count) {
+    return '$count applications in the queue';
+  }
+
+  @override
+  String get adminApprovalFooter =>
+      'Approving activates the account immediately. Rejections keep the reason for the applicant.';
+
+  @override
+  String get adminApprovedNow => 'Approved — the account is live';
+
+  @override
+  String get adminRejectedNow => 'Application rejected';
+
+  @override
+  String get adminNoApprovals => 'Nothing waiting';
+
+  @override
+  String get adminNoApprovalsBody => 'New applications will appear here.';
+
+  @override
+  String get adminApprovalsUnavailable =>
+      'Pending approvals could not be loaded';
+
+  @override
+  String get adminOpenApprovals => 'Open the approval queue';
+
+  @override
+  String get adminApprovalQueue => 'Approval queue';
+
+  @override
+  String adminPendingApprovalsCount(String count) {
+    return '$count applications need a decision';
+  }
+
+  @override
+  String get adminReviewWithin24h => '24h SLA';
+
+  @override
+  String get adminAllClear => 'Nothing is waiting on you';
+
+  @override
+  String get adminGmv => 'Gross sales (30 days)';
+
+  @override
+  String get adminLast30Days => '30 days';
+
+  @override
+  String get adminCommissionEarned => 'Commission earned';
+
+  @override
+  String get adminActiveUsers => 'Active users';
+
+  @override
+  String get adminNewUsers => 'New users (7 days)';
+
+  @override
+  String get adminPlatformHealth => 'Platform pace';
+
+  @override
+  String get adminNeedsAttention => 'Needs attention';
+
+  @override
+  String get adminAllSystemsOk => 'All systems healthy';
+
+  @override
+  String get adminAllSystemsOkBody =>
+      'Every active news source completed its last run.';
+
+  @override
+  String adminSourceIssues(String count) {
+    return '$count news sources are failing';
+  }
+
+  @override
+  String get adminSourceIssuesBody =>
+      'The collector keeps retrying; open the source console for the error.';
+
+  @override
+  String get adminManageSources => 'Manage sources';
+
+  @override
+  String get adminRecentActivity => 'Recent activity';
+
+  @override
+  String get adminMonitor => 'Monitor';
+
+  @override
+  String get adminMonitorSubtitle =>
+      'Orders, catalogue and published content — read-only unless noted.';
+
+  @override
+  String get adminOrders => 'Orders';
+
+  @override
+  String get adminCatalog => 'Catalogue';
+
+  @override
+  String get adminContent => 'Content';
+
+  @override
+  String get adminReadOnly => 'Monitoring only';
+
+  @override
+  String get adminReadOnlyBody =>
+      'Admins can see every order but cannot place one — buying is farmer-only by design.';
+
+  @override
+  String get adminCatalogNote => 'Every listing, every shop';
+
+  @override
+  String get adminCatalogNoteBody =>
+      'Hide a listing that breaks the rules; the shop keeps the record.';
+
+  @override
+  String get adminContentNote => 'Published content';
+
+  @override
+  String get adminContentNoteBody =>
+      'Take down a story that is wrong or unsafe. The author is notified by the server.';
+
+  @override
+  String get adminItems => 'Items';
+
+  @override
+  String get adminHidden => 'Hidden';
+
+  @override
+  String get adminHideProduct => 'Hide';
+
+  @override
+  String get adminShowProduct => 'Show';
+
+  @override
+  String get adminProductUpdated => 'Listing updated';
+
+  @override
+  String get adminTakeDown => 'Take down';
+
+  @override
+  String get adminRestore => 'Restore';
+
+  @override
+  String get adminContentUpdated => 'Content updated';
+
+  @override
+  String get adminSystem => 'System';
+
+  @override
+  String get adminSystemSubtitle =>
+      'Platform switches, sources, logs and your account.';
+
+  @override
+  String get adminSettings => 'Platform settings';
+
+  @override
+  String get adminCommissionPercent => 'Commission (%)';
+
+  @override
+  String get adminCommissionHint => 'Charged on each completed order, 0–30%.';
+
+  @override
+  String get adminCommissionInvalid => 'Enter a number from 0 to 30';
+
+  @override
+  String get adminAutoApproveFarmers => 'Auto-approve farmer accounts';
+
+  @override
+  String get adminAutoApproveFarmersHint =>
+      'Farmers skip the queue; vendors and experts never do.';
+
+  @override
+  String get adminMaintenance => 'Maintenance mode';
+
+  @override
+  String get adminMaintenanceHint =>
+      'Shows the maintenance notice to every role except admin.';
+
+  @override
+  String get adminSupportPhone => 'Support phone';
+
+  @override
+  String get adminBroadcast => 'Broadcast banner';
+
+  @override
+  String get adminBroadcastHint =>
+      'Shown on the farmer home until you clear it.';
+
+  @override
+  String get adminSaveSettings => 'Save settings';
+
+  @override
+  String get adminSettingsSaved => 'Settings saved';
+
+  @override
+  String get adminOperations => 'Operations';
+
+  @override
+  String get adminSourcesSubtitle => 'What the collector reads, and how often.';
+
+  @override
+  String get adminLogsSubtitle => 'Every system, collection and audit event.';
+
+  @override
+  String get adminVendorApprovals => 'Vendor approvals';
+
+  @override
+  String get adminVendorApprovalsSubtitle =>
+      'Licences, suspensions and reinstatements.';
+
+  @override
+  String get adminUsersSubtitle => 'Search, filter and act on any account.';
+
+  @override
+  String get advisoryTitle => 'Expert advice';
+
+  @override
+  String get advisorySubtitle =>
+      'Verified guidance written by agricultural experts.';
+
+  @override
+  String get homeTileAdvisory => 'Read advice';
+
+  @override
+  String get homeTileAdvisoryHint => 'From the experts';
+
+  @override
+  String get articleComments => 'Comments';
+
+  @override
+  String get articleCommentHint => 'Write a comment';
+
+  @override
+  String get articleRate => 'Rate this';
+
+  @override
+  String get articleRated => 'Thanks, your rating was saved';
+
+  @override
+  String get articleReads => 'reads';
+
+  @override
+  String get articleNoComments => 'No comments yet.';
+
+  @override
+  String get askExpert => 'Ask an expert';
+
+  @override
+  String get askExpertHint => 'Describe your crop problem in detail';
+
+  @override
+  String get askExpertSent =>
+      'Your question was sent. You will be notified when an expert answers.';
+
+  @override
+  String get askExpertUrgent => 'Urgent';
+
+  @override
+  String get actionLike => 'Like';
+
+  @override
+  String get actionUnlike => 'Remove like';
 }

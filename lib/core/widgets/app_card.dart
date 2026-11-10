@@ -42,9 +42,22 @@ class _AppCardState extends State<AppCard> {
     final p = context.palette;
     final radius = widget.radius;
 
+    // The surface is a [Material], not a painted box: ListTile, InkWell and
+    // anything else that inks on the nearest Material must find one *above* the
+    // background colour. With only a coloured DecoratedBox in between, the
+    // splash is invisible and Flutter asserts in debug builds.
+    Widget child = Padding(padding: widget.padding, child: widget.child);
+    if (widget.onTap != null) {
+      child = InkWell(
+        onTap: widget.onTap,
+        borderRadius: radius,
+        onHighlightChanged: (v) => setState(() => _pressed = v),
+        child: child,
+      );
+    }
+
     final content = DecoratedBox(
       decoration: BoxDecoration(
-        color: widget.tint ?? p.surface,
         borderRadius: radius,
         border: Border.all(color: p.outline, width: p.borderWidth),
         boxShadow: p.useShadow
@@ -57,40 +70,33 @@ class _AppCardState extends State<AppCard> {
               ]
             : null,
       ),
-      child: Padding(padding: widget.padding, child: widget.child),
+      child: Material(
+        color: widget.tint ?? p.surface,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: child,
+      ),
     );
-
-    if (widget.onTap == null) {
-      return widget.semanticLabel == null
-          ? content
-          : Semantics(
-              label: widget.semanticLabel,
-              container: true,
-              child: content,
-            );
-    }
 
     // A 1.5% press scale. Small enough that it never disturbs a reading eye,
     // large enough that the surface answers a thumb — and it collapses to no
     // motion under reduce-motion because it goes through [Motion.duration].
+    final body = widget.onTap == null
+        ? content
+        : AnimatedScale(
+            scale: _pressed ? 0.985 : 1,
+            duration: Motion.duration(context, Motion.fast),
+            curve: Curves.easeOut,
+            child: content,
+          );
+
+    if (widget.onTap == null && widget.semanticLabel == null) return body;
+
     return Semantics(
-      button: true,
+      button: widget.onTap != null,
       label: widget.semanticLabel,
       container: true,
-      child: AnimatedScale(
-        scale: _pressed ? 0.985 : 1,
-        duration: Motion.duration(context, Motion.fast),
-        curve: Curves.easeOut,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: radius,
-            onHighlightChanged: (v) => setState(() => _pressed = v),
-            child: content,
-          ),
-        ),
-      ),
+      child: body,
     );
   }
 }
@@ -168,41 +174,53 @@ class ListRow extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: Radii.cardAll,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: Space.xs),
-            child: Row(
-              children: [
-                if (leading != null) ...[
-                  leading!,
-                  const SizedBox(width: Space.sm),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(title, style: t.titleSmall),
-                      if (subtitle != null)
-                        Text(
-                          subtitle!,
-                          style: t.bodySmall,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // `trailing` is usually a status pill. Pills are laid out at their
+              // intrinsic width inside a Row, so a long Bangla status would push
+              // the row past the card; cap it and let it ellipsize instead.
+              final trailingMax = constraints.maxWidth * 0.42;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: Space.xs),
+                child: Row(
+                  children: [
+                    if (leading != null) ...[
+                      leading!,
+                      const SizedBox(width: Space.sm),
                     ],
-                  ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(title, style: t.titleSmall),
+                          if (subtitle != null)
+                            Text(
+                              subtitle!,
+                              style: t.bodySmall,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (trailing != null) ...[
+                      const SizedBox(width: Space.xs),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: trailingMax),
+                        child: trailing!,
+                      ),
+                    ] else if (onTap != null)
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: p.onSurfaceMuted,
+                        size: Sizes.iconInline,
+                      ),
+                  ],
                 ),
-                if (trailing != null) ...[
-                  const SizedBox(width: Space.xs),
-                  trailing!,
-                ] else if (onTap != null)
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: p.onSurfaceMuted,
-                    size: Sizes.iconInline,
-                  ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

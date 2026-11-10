@@ -14,6 +14,7 @@ class ApiException implements Exception {
     this.serverMessageBn,
     this.serverMessageEn,
     this.statusCode,
+    this.details = const [],
   });
 
   /// `validation_error | unauthorized | forbidden | not_found | conflict |
@@ -28,6 +29,22 @@ class ApiException implements Exception {
   final String? serverMessageEn;
   final int? statusCode;
 
+  /// Server field errors from `validation_error`, with `message_bn` already
+  /// attached by the backend.
+  final List<Map<String, dynamic>> details;
+
+  String? fieldMessage(String field, String locale) {
+    for (final detail in details) {
+      if (detail['field'] != field) continue;
+      final bn = detail['message_bn'] as String?;
+      final en = detail['message'] as String?;
+      if (locale == 'bn' && bn != null && bn.isNotEmpty) return bn;
+      if (en != null && en.isNotEmpty) return en;
+      if (bn != null && bn.isNotEmpty) return bn;
+    }
+    return null;
+  }
+
   /// Server text wins when present: the backend is the authority on why it
   /// refused, and it already localises.
   String message(String locale) {
@@ -40,7 +57,33 @@ class ApiException implements Exception {
     if (locale != 'bn' && (serverMessageBn?.isNotEmpty ?? false)) {
       return serverMessageBn!;
     }
-    return messageKey ?? 'stateErrorBody';
+    const fallbacks = <String, (String, String)>{
+      'stateErrorBody': (
+        'সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+        'Something went wrong. Please try again.',
+      ),
+      'no_products_found': (
+        'কোনো পণ্য পাওয়া যায়নি।',
+        'No products were found.',
+      ),
+      'one_vendor_per_order': (
+        'একটি অর্ডারে একাধিক দোকানের পণ্য রাখা যাবে না।',
+        'An order can contain products from one shop only.',
+      ),
+      'order_cannot_cancel': (
+        'এই অর্ডারটি এখন আর বাতিল করা যাবে না।',
+        'This order can no longer be cancelled.',
+      ),
+      'vendorBlockedBody': (
+        'আপনার দোকানটি এখন সীমাবদ্ধ। সহায়তা কেন্দ্রে যোগাযোগ করুন।',
+        'Your shop is currently restricted. Please contact support.',
+      ),
+    };
+    final fallback = fallbacks[messageKey];
+    if (fallback != null) return locale == 'en' ? fallback.$2 : fallback.$1;
+    return locale == 'en'
+        ? 'Something went wrong. Please try again.'
+        : 'সমস্যা হয়েছে। আবার চেষ্টা করুন।';
   }
 
   @override
@@ -81,12 +124,12 @@ abstract interface class AuthRepository {
   Future<AppUser> register(RegisterRequest request);
 
   /// FR-3. Always resolves — the response is deliberately generic so the app
-  /// cannot be used to discover whether a number is registered.
-  Future<void> requestOtp(String mobile);
+  /// cannot be used to discover whether a number is registered. Until SMS is
+  /// configured, development prints the reset code in the API server log.
+  Future<void> requestPasswordReset(String mobile);
 
   Future<void> resetPassword({
-    required String mobile,
-    required String otp,
+    required String token,
     required String newPassword,
   });
 

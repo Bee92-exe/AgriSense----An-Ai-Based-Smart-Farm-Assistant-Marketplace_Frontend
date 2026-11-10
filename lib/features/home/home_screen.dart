@@ -17,8 +17,10 @@ import '../../core/widgets/big_action_tile.dart';
 import '../../core/widgets/living_field.dart';
 import '../../core/widgets/states.dart';
 import '../../data/models/diagnosis.dart';
+import '../../data/models/growth.dart';
 import '../../data/models/news_item.dart';
 import '../../data/models/weather.dart';
+import '../../features/advisory/advisory_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shell/farmer_shell.dart';
 import 'home_providers.dart';
@@ -168,6 +170,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         newsCount:
                             news.value?.where((n) => !n.isRead).length ?? 0,
                       ),
+                      const SizedBox(height: Space.md),
+                      // The design system pins the grid at six tiles, so expert
+                      // articles get a section of their own rather than a
+                      // seventh tile that would break the two-column rhythm.
+                      SectionHeader(
+                        title: l.homeTileAdvisory,
+                        actionLabel: l.actionSeeAll,
+                        onAction: () => context.push(Routes.advisory),
+                      ),
+                      const SizedBox(height: Space.xs),
+                      ref.watch(advisoryListProvider).when(
+                            loading: () => const LoadingState(
+                              rows: 1,
+                              showHeader: false,
+                            ),
+                            error: (_, _) => const SizedBox.shrink(),
+                            data: (articles) => articles.isEmpty
+                                ? const SizedBox.shrink()
+                                : _AdviceStrip(
+                                    articles: articles.take(4).toList(),
+                                  ),
+                          ),
                       const SizedBox(height: Space.md),
                       SectionHeader(
                         title: l.diagnosisHistoryTitle,
@@ -972,6 +996,68 @@ class _UrgentBanner extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A horizontal strip of recent expert articles.
+///
+/// Kept off the six-tile grid on purpose: those tiles are fixed actions, while
+/// this is reading material that changes daily.
+class _AdviceStrip extends StatelessWidget {
+  const _AdviceStrip({required this.articles});
+
+  final List<ExpertArticle> articles;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return SizedBox(
+      height: 132,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: articles.length,
+        separatorBuilder: (_, _) => const SizedBox(width: Space.xs),
+        itemBuilder: (context, index) {
+          final article = articles[index];
+          return SizedBox(
+            width: 220,
+            child: AppCard(
+              padding: const EdgeInsets.all(Space.sm),
+              onTap: () => context.push('/advisory/${article.id}'),
+              semanticLabel: article.title,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    article.title,
+                    style: context.texts.titleSmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: Space.xxs),
+                  Expanded(
+                    child: Text(
+                      article.summary,
+                      style: context.texts.bodySmall
+                          ?.copyWith(color: p.onSurfaceMuted),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    article.authorName,
+                    style: context.texts.bodySmall
+                        ?.copyWith(color: p.onSurfaceMuted),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

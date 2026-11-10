@@ -1,5 +1,25 @@
 import '../../l10n/app_localizations.dart';
 import '../../data/models/enums.dart';
+import '../../data/models/ops.dart';
+
+/// The categories a vendor can file a listing under (API_SPEC §6). Order matters:
+/// the editor shows them in this order, seed first because that is what most
+/// vendors in the pilot sell.
+const List<String> kProductCategories = [
+  'seed',
+  'fertilizer',
+  'pesticide',
+  'fungicide',
+  'equipment',
+  'other',
+];
+
+/// The three families a news feed can be filed under (API_SPEC §9).
+const List<String> kNewsSourceTypes = [
+  'government',
+  'research',
+  'news_portal',
+];
 
 /// Bangla labels for domain enums.
 ///
@@ -49,6 +69,9 @@ extension NewsCategoryLabel on NewsCategory {
         NewsCategory.pest => l.newsCategoryPest,
         NewsCategory.virus => l.newsCategoryVirus,
         NewsCategory.nutrientDeficiency => l.newsCategoryNutrient,
+        NewsCategory.weather => l.newsCategoryWeather,
+        NewsCategory.market => l.newsCategoryMarket,
+        NewsCategory.advisory => l.newsCategoryAdvisory,
       };
 }
 
@@ -68,5 +91,56 @@ extension CropLabel on CropType {
         CropType.rice => l.diagnosisCropRice,
         CropType.potato => l.diagnosisCropPotato,
         CropType.tomato => l.diagnosisCropTomato,
+      };
+}
+
+/// Labels for the staff vocabulary — the strings only a vendor, expert or admin
+/// ever reads. Kept next to the enum labels so the same wire value cannot be
+/// worded two ways in two screens.
+extension OpsLabel on AppL10n {
+  String productCategory(String wire) => switch (wire) {
+        'seed' => categorySeed,
+        'fertilizer' => categoryFertilizer,
+        'pesticide' => categoryPesticide,
+        'fungicide' => categoryFungicide,
+        'equipment' => categoryEquipment,
+        _ => categoryOther,
+      };
+
+  String draftStatus(DraftStatus status) => switch (status) {
+        DraftStatus.needsWriting => draftNeedsWriting,
+        DraftStatus.draft => draftInProgress,
+        DraftStatus.published => draftPublished,
+        DraftStatus.rejected => draftRejected,
+      };
+
+  String accountStatus(AccountStatus status) => switch (status) {
+        AccountStatus.active => accountStatusActive,
+        AccountStatus.pending => accountStatusPending,
+        AccountStatus.suspended => accountStatusSuspended,
+        AccountStatus.removed => accountStatusRemoved,
+      };
+
+  /// The four vendor approval states (`pending | verified | rejected |
+  /// suspended`), shared by the admin list and the verification gate.
+  String vendorVerification(String status) => switch (status) {
+        'verified' => vendorVerified,
+        'rejected' => vendorRejected,
+        'suspended' => vendorSuspended,
+        _ => vendorPendingReview,
+      };
+
+  String opsLogType(OpsLogType type) => switch (type) {
+        OpsLogType.system => logTypeSystem,
+        OpsLogType.collection => logTypeCollection,
+        OpsLogType.voice => logTypeVoice,
+        OpsLogType.aiFallback => logTypeAiFallback,
+        OpsLogType.audit => logTypeAudit,
+      };
+
+  String newsSourceType(String wire) => switch (wire) {
+        'research' => sourceTypeResearch,
+        'news_portal' => sourceTypeNewsPortal,
+        _ => sourceTypeGovernment,
       };
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/providers/settings_provider.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_metrics.dart';
 import '../../core/theme/app_theme.dart';
@@ -10,6 +11,7 @@ import '../../core/utils/labels.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_screen.dart';
 import '../../core/widgets/badges.dart';
+import '../../core/widgets/read_aloud.dart';
 import '../../core/widgets/states.dart';
 import '../../data/models/news_item.dart';
 import '../../data/providers.dart';
@@ -19,6 +21,21 @@ final _newsItemProvider =
     FutureProvider.family<NewsItem, String>((ref, id) async {
   return ref.watch(newsRepositoryProvider).detail(id);
 });
+
+/// The words a farmer hears when this item is read aloud: the same title,
+/// summary and advised action that are on the screen, in that order.
+///
+/// The advised action only has a Bangla source field (the news pipeline stores
+/// what the SAAO wrote), so it is only read out in Bangla rather than read out
+/// in the wrong language.
+String speechForNews(NewsItem item, String locale) => [
+      item.title(locale),
+      item.summary(locale),
+      if (locale == 'bn' && (item.advisedActionBn?.isNotEmpty ?? false))
+        item.advisedActionBn!,
+      if (locale == 'bn' && (item.symptomsBn?.isNotEmpty ?? false))
+        item.symptomsBn!,
+    ].join('. ');
 
 /// One published item, with its source and verifier always visible.
 ///
@@ -34,17 +51,22 @@ class NewsDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final async = ref.watch(_newsItemProvider(newsId));
+    final item = async.value;
 
     return AppScreen(
       title: l.navNews,
+      // Appears only once the item is loaded, so the button can never read out
+      // an empty page. Read-aloud is a control, not a placeholder: it used to
+      // open a "coming soon" snackbar.
       actions: [
-        IconButton(
-          tooltip: l.actionReadAloud,
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l.comingSoonBody)),
+        if (item != null)
+          ReadAloudButton(
+            text: speechForNews(
+              item,
+              Localizations.localeOf(context).languageCode,
+            ),
+            autoPlay: ref.watch(settingsProvider).voiceMode,
           ),
-          icon: const Icon(Icons.volume_up_rounded),
-        ),
       ],
       child: async.when(
         loading: () => const LoadingState(rows: 3),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/providers/settings_provider.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_metrics.dart';
@@ -15,6 +16,7 @@ import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_screen.dart';
 import '../../core/widgets/badges.dart';
 import '../../core/widgets/confidence_gauge.dart';
+import '../../core/widgets/read_aloud.dart';
 import '../../core/widgets/states.dart';
 import '../../data/models/diagnosis.dart';
 import '../../data/models/enums.dart';
@@ -89,9 +91,26 @@ class _Body extends ConsumerWidget {
 
         if (d.treatmentSteps != null && d.treatmentSteps!.isNotEmpty) ...[
           const SizedBox(height: Space.lg),
-          SectionHeader(
-            title: l.diagnosisTreatmentTitle,
-            icon: Icons.list_alt_rounded,
+          Row(
+            children: [
+              Expanded(
+                child: SectionHeader(
+                  title: l.diagnosisTreatmentTitle,
+                  icon: Icons.list_alt_rounded,
+                ),
+              ),
+              // Reads the very steps on this card. Auto-plays when the farmer
+              // has voice mode on — a farmer who cannot read the card should
+              // not have to find a button to hear it either.
+              ReadAloudButton(
+                text: speechForSteps(
+                  d.treatmentSteps!,
+                  Localizations.localeOf(context).languageCode,
+                ),
+                tooltip: l.diagnosisReadAll,
+                autoPlay: ref.watch(settingsProvider).voiceMode,
+              ),
+            ],
           ),
           const SizedBox(height: Space.xs),
           _StepsCard(steps: d.treatmentSteps!),
@@ -296,6 +315,10 @@ class _Uncertain extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppL10n.of(context);
     final p = context.palette;
+    // `failed` is the server saying the photo held no crop leaf at all. That is
+    // a different message from "I cannot tell which disease this is": there is
+    // nothing to be unsure about, so the card says what to photograph instead.
+    final notLeaf = diagnosis.failed;
 
     return _MarginCard(
       accent: p.warning,
@@ -305,11 +328,18 @@ class _Uncertain extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.help_outline_rounded, color: p.onHarvestContainer),
+              Icon(
+                notLeaf
+                    ? Icons.image_not_supported_rounded
+                    : Icons.help_outline_rounded,
+                color: p.onHarvestContainer,
+              ),
               const SizedBox(width: Space.xs),
               Expanded(
                 child: Text(
-                  l.diagnosisLowTitle,
+                  notLeaf
+                      ? l.diagnosisNotLeafTitle
+                      : l.diagnosisLowTitle,
                   style: context.texts.titleMedium
                       ?.copyWith(color: p.onHarvestContainer),
                 ),
@@ -319,7 +349,7 @@ class _Uncertain extends ConsumerWidget {
           ),
           const SizedBox(height: Space.xs),
           Text(
-            l.diagnosisLowBody,
+            notLeaf ? l.diagnosisNotLeafBody : l.diagnosisLowBody,
             style: context.texts.bodySmall
                 ?.copyWith(color: p.onHarvestContainer),
           ),
@@ -437,6 +467,15 @@ class _CautionRow extends StatelessWidget {
     );
   }
 }
+
+/// The treatment plan as one spoken paragraph.
+///
+/// The numbered steps read as a list would sound odd out loud, so each step is
+/// prefixed with its number in the farmer's own digits, and the source lines are
+/// left out — provenance is for the eye, not for the ear.
+String speechForSteps(List<TreatmentStep> steps, String locale) => steps
+    .map((step) => '${AppFormat(locale).number(step.order)}. ${step.label(locale)}')
+    .join('. ');
 
 /// The numbered treatment plan. Each step keeps its source line, because the
 /// whole point of the knowledge base is that this advice has provenance.

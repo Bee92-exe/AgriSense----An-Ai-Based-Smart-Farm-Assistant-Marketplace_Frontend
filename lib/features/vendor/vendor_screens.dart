@@ -248,8 +248,8 @@ class _ProductCard extends ConsumerWidget {
             spacing: Space.sm,
             runSpacing: Space.xs,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   _StockButton(
                     icon: Icons.remove_rounded,
@@ -272,8 +272,8 @@ class _ProductCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   TextButton.icon(
                     onPressed: onEdit,

@@ -1,15 +1,19 @@
 import 'dart:math';
 
+import '../models/crop.dart';
 import '../models/diagnosis.dart';
 import '../models/enums.dart';
 import '../models/news_item.dart';
 import '../models/product.dart';
-import '../models/user.dart';
+import '../models/voice.dart';
 import '../models/weather.dart';
+import '../reference/locations.dart';
 import '../repositories/auth_repository.dart';
+import '../repositories/crop_repository.dart';
 import '../repositories/diagnosis_repository.dart';
 import '../repositories/market_repository.dart';
 import '../repositories/news_repository.dart';
+import '../repositories/voice_repository.dart';
 import '../repositories/weather_repository.dart';
 import 'mock_seed.dart';
 
@@ -57,171 +61,6 @@ Future<void> _maybeFail(MockConfig config) async {
 }
 
 String _nowIso() => DateTime.now().toIso8601String();
-
-/// Demo accounts. Documented in the handoff so the UI can be driven without
-/// guessing, and deliberately not a "log in with anything" mock — the failure
-/// path matters more than convenience.
-const Map<String, Map<String, dynamic>> kDemoAccounts = {
-  '01711000001': {
-    'password': 'agrisense',
-    'name': 'আব্দুল করিম',
-    'role': 'farmer',
-    'district': 'ঢাকা',
-    'farm_size': 2.5,
-    'crop_preferences': ['rice', 'potato'],
-  },
-  '01711000002': {
-    'password': 'agrisense',
-    'name': 'রহিম মিয়া',
-    'role': 'vendor',
-    'district': 'গাজীপুর',
-    'shop_name': 'রহিম কৃষি ভান্ডার',
-    'verification_status': 'verified',
-  },
-  '01711000003': {
-    'password': 'agrisense',
-    'name': 'ড. মাহবুবুর রহমান',
-    'role': 'expert',
-    'district': 'ঢাকা',
-    'specialization': 'ধান ও সবজির রোগ',
-    'certification': 'BARI-2019-4471',
-  },
-};
-
-Map<String, dynamic> _userJson(String mobile, Map<String, dynamic> a) {
-  final role = a['role'] as String;
-  return {
-    'id': 'usr-${mobile.substring(mobile.length - 4)}',
-    'name': a['name'],
-    'mobile': mobile,
-    'role': role,
-    'status': 'active',
-    'district': a['district'],
-    'farm_size': a['farm_size'],
-    'crop_preferences': a['crop_preferences'] ?? <String>[],
-    'language': 'bn',
-    'high_contrast': false,
-    'voice_mode': true,
-    if (role == 'vendor')
-      'vendor': {
-        'shop_name': a['shop_name'],
-        'verification_status': a['verification_status'],
-        'rating': 4.6,
-      },
-    if (role == 'expert')
-      'expert': {
-        'specialization': a['specialization'],
-        'certification': a['certification'],
-      },
-  };
-}
-
-class MockAuthRepository implements AuthRepository {
-  MockAuthRepository({MockConfig? config}) : _config = config ?? MockConfig();
-
-  final MockConfig _config;
-
-  /// Accounts created through the register screen during this session, so a new
-  /// registration can immediately log in.
-  final Map<String, Map<String, dynamic>> _registered = {};
-
-  @override
-  Future<AppUser> login({
-    required String mobile,
-    required String password,
-  }) async {
-    await _maybeFail(_config);
-    final match = kDemoAccounts[mobile] ?? _registered[mobile];
-    if (match == null || match['password'] != password) {
-      throw const ApiException(
-        code: 'unauthorized',
-        messageKey: 'loginFailed',
-        statusCode: 401,
-      );
-    }
-    return AppUser.fromJson(_userJson(mobile, match));
-  }
-
-  @override
-  Future<AppUser> register(RegisterRequest request) async {
-    await _maybeFail(_config);
-    if (kDemoAccounts.containsKey(request.mobile) ||
-        _registered.containsKey(request.mobile)) {
-      throw const ApiException(
-        code: 'conflict',
-        messageKey: 'phone_registered',
-        statusCode: 409,
-      );
-    }
-    final store = <String, dynamic>{
-      'password': request.password,
-      'name': request.name,
-      'role': request.role.wire,
-      'district': request.district,
-      if (request.shopName != null) 'shop_name': request.shopName,
-      if (request.shopName != null) 'verification_status': 'pending',
-      if (request.specialization != null)
-        'specialization': request.specialization,
-      if (request.certification != null)
-        'certification': request.certification,
-    };
-    _registered[request.mobile] = store;
-
-    // A7: vendors and experts register as `pending` and cannot use their shell
-    // until an admin approves them.
-    final needsApproval =
-        request.role == Role.vendor || request.role == Role.expert;
-    return AppUser(
-      id: 'usr-new',
-      name: request.name,
-      mobile: request.mobile,
-      role: request.role,
-      status: needsApproval ? AccountStatus.pending : AccountStatus.active,
-      district: request.district,
-      vendor: request.role == Role.vendor
-          ? VendorProfile(
-              shopName: request.shopName ?? '',
-              verificationStatus: 'pending',
-            )
-          : null,
-      expert: request.role == Role.expert
-          ? ExpertProfile(
-              specialization: request.specialization,
-              certification: request.certification,
-            )
-          : null,
-    );
-  }
-
-  @override
-  Future<void> requestOtp(String mobile) async {
-    // Deliberately always succeeds: API_SPEC says the response must not reveal
-    // whether a number exists.
-    await _maybeFail(_config);
-  }
-
-  @override
-  Future<void> resetPassword({
-    required String mobile,
-    required String otp,
-    required String newPassword,
-  }) async {
-    await _maybeFail(_config);
-    if (otp != '123456') {
-      throw const ApiException(code: 'validation_error', messageKey: 'otpInvalid');
-    }
-    final account = kDemoAccounts[mobile] ?? _registered[mobile];
-    if (account != null) account['password'] = newPassword;
-  }
-
-  @override
-  Future<void> logout() async {
-    await _lag();
-  }
-
-  @override
-  Future<AppUser?> restoreSession() async => null;
-}
 
 class MockDiagnosisRepository implements DiagnosisRepository {
   MockDiagnosisRepository({MockConfig? config})
@@ -646,4 +485,567 @@ class MockWeatherRepository implements WeatherRepository {
     final report = await this.report(district: district);
     return report.alerts;
   }
+}
+
+/// Phase 1 stand-in for `/voice/command` (VOICE_UX.md §8).
+///
+/// A keyword agent, not a language model: it exists so every state of the voice
+/// sheet — understood, unclear, refused, and the confirmation gate — can be
+/// built and tested before the AI service exists. Two behaviours are deliberate:
+///
+/// * An unmatched phrase is a normal `unknown` result with confidence 0, not an
+///   exception. "I did not understand" is a state the farmer sees, not a crash.
+/// * A phrase that matches loosely (one weak keyword, e.g. just "বাজার") comes
+///   back *below* [VoiceCommand.minConfidence] so the unclear path is reachable
+///   on purpose rather than only by typing nonsense.
+class MockVoiceRepository implements VoiceRepository {
+  MockVoiceRepository({MockConfig? config}) : _config = config ?? MockConfig();
+
+  final MockConfig _config;
+
+  /// Screen keywords. Checked in this order, longest phrase first, so
+  /// "অর্ডার দেখাও" cannot be eaten by the shorter "অর্ডার করো" rule below.
+  static const List<(String, VoiceDestination)> _destinations = [
+    ('কৃষি বার্তা', VoiceDestination.krishiBarta),
+    ('ফসল পরামর্শ', VoiceDestination.cropAdvice),
+    ('সহায়ক', VoiceDestination.assistant),
+    ('assistant', VoiceDestination.assistant),
+    ('প্রোফাইল', VoiceDestination.profile),
+    ('পুরনো স্ক্যান', VoiceDestination.history),
+    ('history', VoiceDestination.history),
+    ('profile', VoiceDestination.profile),
+    ('weather', VoiceDestination.weather),
+    ('news', VoiceDestination.krishiBarta),
+    ('আবহাওয়া', VoiceDestination.weather),
+    ('স্ক্যান', VoiceDestination.diagnosis),
+    ('রোগ', VoiceDestination.diagnosis),
+    ('খবর', VoiceDestination.krishiBarta),
+    ('ইতিহাস', VoiceDestination.history),
+    ('বাজার', VoiceDestination.haatBazar),
+    ('market', VoiceDestination.haatBazar),
+    ('scan', VoiceDestination.diagnosis),
+  ];
+
+  /// Product words map to the wire category the catalogue actually uses.
+  static const List<(String, String)> _categories = [
+    ('ছত্রাকনাশক', 'fungicide'),
+    ('ফাঙ্গিসাইড', 'fungicide'),
+    ('fungicide', 'fungicide'),
+    ('কীটনাশক', 'pesticide'),
+    ('pesticide', 'pesticide'),
+    ('সার', 'fertilizer'),
+    ('fertilizer', 'fertilizer'),
+    ('বীজ', 'seed'),
+    ('seed', 'seed'),
+    ('যন্ত্র', 'equipment'),
+    ('equipment', 'equipment'),
+  ];
+
+  static const Map<String, int> _numbers = {
+    'এক': 1,
+    'দুই': 2,
+    'দুটো': 2,
+    'তিন': 3,
+    'চার': 4,
+    'পাঁচ': 5,
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+  };
+
+  @override
+  Future<VoiceCommand> interpret(String transcript) async {
+    // Same simulated latency and injectable failure rate as every other mock,
+    // so the sheet's error state is reachable without unplugging anything.
+    await _maybeFail(_config);
+    final text = transcript.trim();
+    final lower = text.toLowerCase();
+
+    // A real recogniser returns nothing for silence; treated as unclear rather
+    // than as a command.
+    if (text.isEmpty) return VoiceCommand.unknown(text);
+
+    // 1. Money first. "রাইস ব্লাস্টের ছত্রাকনাশকটা অর্ডার করো" contains a product
+    //    word and an order word, and must not be mistaken for a search.
+    final isOrder = _hasAny(lower, ['অর্ডার করো', 'অর্ডার করে', 'কিনব',
+      'কিনতে', 'নিয়ে আসো', 'order', 'buy']);
+    if (isOrder) {
+      final category = _categoryIn(lower);
+      if (category == null) {
+        // Ordering something unnamed: ask which product, do not guess.
+        return VoiceCommand(
+          intent: VoiceIntent.orderProduct,
+          transcript: text,
+          confidence: 0.55,
+          quantity: _quantityIn(lower),
+        );
+      }
+      return VoiceCommand(
+        intent: VoiceIntent.orderProduct,
+        transcript: text,
+        confidence: 0.92,
+        category: category.$2,
+        query: category.$1,
+        quantity: _quantityIn(lower),
+      );
+    }
+
+    // 2. Looking for a product, not buying it yet.
+    final isSearch = _hasAny(lower, ['দেখাও', 'খুঁজে', 'কী আছে', 'show', 'find',
+      'search']);
+    final searchCategory = _categoryIn(lower);
+    if (isSearch || searchCategory != null) {
+      return VoiceCommand(
+        intent: VoiceIntent.searchProduct,
+        transcript: text,
+        confidence: searchCategory == null ? 0.62 : 0.9,
+        category: searchCategory?.$2,
+        query: searchCategory?.$1,
+      );
+    }
+
+    // 3. Weather, then screens.
+    if (_hasAny(lower, ['আবহাওয়া', 'বৃষ্টি', 'weather', 'rain'])) {
+      return VoiceCommand(
+        intent: VoiceIntent.weather,
+        transcript: text,
+        confidence: 0.9,
+        destination: VoiceDestination.weather,
+      );
+    }
+    // 4. A question gets an answer, never an action — and questions are checked
+    //    before screens, because "ধানে পাতা পোড়া রোগে কী করব?" contains "রোগ"
+    //    and must not be read as "open the diagnosis screen". The answer here is
+    //    deliberately generic: knowledge.md forbids inventing a pesticide dose,
+    //    so the demo answer sends the farmer to a person rather than naming one.
+    if (_hasAny(lower, ['কী কর', 'কি কর', 'কী হবে', 'কেন', 'কীভাবে', 'কত',
+      'how', 'why', 'what should'])) {
+      return VoiceCommand(
+        intent: VoiceIntent.ask,
+        transcript: text,
+        confidence: 0.75,
+        answer: _demoAnswer(lower),
+      );
+    }
+
+    // 5. Screens. A keyword on its own ("বাজার", "আবহাওয়া") is heard but is not
+    //    enough to act on — the sheet offers options instead of guessing where
+    //    the farmer wanted to go.
+    for (final (phrase, destination) in _destinations) {
+      if (!lower.contains(phrase)) continue;
+      final bare = lower
+              .replaceAll(RegExp(r'[\s।?!,.]+$'), '')
+              .trim() ==
+          phrase;
+      return VoiceCommand(
+        intent: VoiceIntent.navigate,
+        transcript: text,
+        confidence: bare ? 0.55 : 0.88,
+        destination: destination,
+      );
+    }
+
+    return VoiceCommand.unknown(text);
+  }
+
+  String _demoAnswer(String question) =>
+      'এটি ডেমো উত্তর: আক্রান্ত গাছ আলাদা করে রাখুন, পাতা পুড়ে ফেলুন এবং '
+      'স্থানীয় উপ-সহকারী কৃষি কর্মকর্তাকে দেখান। সঠিক ওষুধ ও মাত্রা '
+      'যাচাই করা জ্ঞানভাণ্ডার থেকে দেওয়া হবে, আমি নিজে বানিয়ে বলব না।';
+
+  bool _hasAny(String haystack, List<String> needles) =>
+      needles.any(haystack.contains);
+
+  (String, String)? _categoryIn(String text) {
+    for (final entry in _categories) {
+      if (text.contains(entry.$1) || text.contains(entry.$1.toLowerCase())) {
+        return entry;
+      }
+    }
+    return null;
+  }
+
+  int _quantityIn(String text) {
+    for (final entry in _numbers.entries) {
+      if (text.contains(entry.key)) return entry.value;
+    }
+    final digits = RegExp(r'(\d+)').firstMatch(text);
+    final parsed = int.tryParse(digits?.group(1) ?? '') ?? 1;
+    return parsed.clamp(1, 20);
+  }
+
+  /// `POST /voice/ask`.
+  ///
+  /// A tiny knowledge base with a deliberate hole in it: "found" answers cite a
+  /// source, and anything outside the base comes back as `found: false` with
+  /// `offer_expert: true`. That is the behaviour the AI service has to keep, and
+  /// the mock exists so the assistant's empty state is built now rather than
+  /// after the model arrives.
+  @override
+  Future<VoiceAnswer> ask(String question) async {
+    await _maybeFail(_config);
+    final text = question.trim().toLowerCase();
+    if (text.isEmpty) {
+      return const VoiceAnswer(
+        transcript: '',
+        found: false,
+        answerText: 'প্রশ্নটি শুনতে পারিনি। আবার বলুন বা লিখুন।',
+      );
+    }
+
+    for (final entry in _knowledge) {
+      if (entry.keywords.any(text.contains)) {
+        return VoiceAnswer(
+          transcript: question,
+          found: true,
+          answerText: entry.answerBn,
+          sources: [entry.source],
+        );
+      }
+    }
+
+    return VoiceAnswer(
+      transcript: question,
+      found: false,
+      answerText: 'এই প্রশ্নের উত্তর যাচাই করা জ্ঞানভাণ্ডারে নেই, তাই আমি আন্দাজে '
+          'বলছি না। বিশেষজ্ঞকে পাঠালে কৃষিবিদ উত্তর দেবেন।',
+      offerExpert: true,
+    );
+  }
+
+  /// Keyword → answer, each with the document it came from and a source line
+  /// the farmer can see. No dose is ever stated: `knowledge.md` forbids the app
+  /// from producing pesticide quantities it cannot cite.
+  static const List<_KbEntry> _knowledge = [
+    _KbEntry(
+      keywords: ['ব্লাস্ট', 'blast', 'বাদামি দাগ', 'brown spot'],
+      answerBn: 'ধানের ব্লাস্টে আক্রান্ত গাছ দেখা গেলে প্রথমে জমির পানি নিষ্কাশনের '
+          'ব্যবস্থা করুন এবং নাইট্রোজেন সারের শেষ কিস্তি কমান। কোন ওষুধ কী মাত্রায় '
+          'দিতে হবে তা উপ-সহকারী কৃষি কর্মকর্তার সাথে মিলে ঠিক করুন।',
+      source: VoiceSource(title: 'BRRI বুলেটিন — ধানের রোগ ব্যবস্থাপনা'),
+    ),
+    _KbEntry(
+      keywords: ['নাবি ধসা', 'লেট ব্লাইট', 'late blight'],
+      answerBn: 'আলুর নাবি ধসা ঠান্ডা আর কুয়াশাচ্ছন্ন আবহাওয়ায় দ্রুত ছড়ায়। '
+          'আক্রান্ত গাছ তুলে ফেলুন, জমিতে পানি জমতে দেবেন না, এবং আক্রমণ শুরুতেই '
+          'কৃষি কর্মকর্তার পরামর্শ নিন।',
+      source: VoiceSource(title: 'DAE — আলুর রোগ ও প্রতিকার'),
+    ),
+    _KbEntry(
+      keywords: ['সার', 'ইউরিয়া', 'fertilizer'],
+      answerBn: 'সারের পরিমাণ মাটির পরীক্ষা আর ফসলের বয়সের উপর নির্ভর করে। '
+          'আপনার জেলার জন্য সঠিক মাত্রা জানতে স্থানীয় কৃষি কর্মকর্তা বা মৃত্তিকা '
+          'সম্পদ উন্নয়ন ইনস্টিটিউটের পরামর্শ নিন।',
+      source: VoiceSource(title: 'SRDI — সার সুপারিশ'),
+    ),
+    _KbEntry(
+      keywords: ['পোকা', 'মাজরা', 'pest', 'insect'],
+      answerBn: 'পোকার আক্রমণ কমাতে সমন্বিত বালাই ব্যবস্থাপনা সবচেয়ে ভালো কাজ করে — '
+          'ফেরোমন ফাঁদ, আলোর ফাঁদ আর আক্রান্ত পাতা সরিয়ে ফেলা। রাসায়নিক ব্যবহারের '
+          'আগে কৃষি কর্মকর্তার পরামর্শ নিন।',
+      source: VoiceSource(title: 'DAE — সমন্বিত বালাই ব্যবস্থাপনা'),
+    ),
+  ];
+}
+
+class _KbEntry {
+  const _KbEntry({
+    required this.keywords,
+    required this.answerBn,
+    required this.source,
+  });
+
+  final List<String> keywords;
+  final String answerBn;
+  final VoiceSource source;
+}
+
+/// Phase 1 crop advice (FR-13) and calendar (FR-15).
+///
+/// The ranking is a small rule table plus the district's live weather, not a
+/// model: it exists so the screen, its reasons and the "weather included" note
+/// are real before the recommender service exists. Two behaviours are
+/// deliberate, because the AI service must keep them:
+///
+/// * every recommendation carries a reason the farmer can judge;
+/// * heavy-rain risk *lowers* the crops that suffer in wet soil and says so,
+///   rather than quietly returning a different order.
+class MockCropRepository implements CropRepository {
+  MockCropRepository({MockConfig? config})
+      : _config = config ?? MockConfig(),
+        _weather = MockWeatherRepository(config: config ?? MockConfig());
+
+  final MockConfig _config;
+  final MockWeatherRepository _weather;
+
+  /// Recommendations asked for in this session. `API_SPEC` has no save
+  /// endpoint, so this is what `GET /crops/recommendations` would return.
+  final List<CropAdvice> _saved = [];
+
+  @override
+  Future<List<String>> soilTypes() async {
+    await _lag();
+    return kSoilTypes;
+  }
+
+  @override
+  Future<List<String>> seasons() async {
+    await _lag();
+    return Seasons.all;
+  }
+
+  @override
+  Future<List<String>> districts() async {
+    await _lag();
+    return kDistricts;
+  }
+
+  @override
+  Future<List<CropAdvice>> savedRecommendations() async {
+    await _lag();
+    return List.unmodifiable(_saved.reversed);
+  }
+
+  @override
+  Future<CropAdvice> recommend({
+    required String district,
+    required String soilType,
+    required String season,
+  }) async {
+    // Latency is simulated once, and the weather call below carries the
+    // injectable failure rate — doubling both made the screen feel broken.
+    await _lag();
+
+    final report = await _weather.report(district: district);
+    final heavyRain = report.alerts.any((a) => a.type == 'heavy_rain');
+
+    final scored = [
+      for (final candidate in _candidates[season] ?? _candidates[Seasons.rabi]!)
+        _score(candidate, soilType: soilType, heavyRain: heavyRain),
+    ]..sort((a, b) => b.score.compareTo(a.score));
+
+    final advice = CropAdvice(
+      id: 'adv-${DateTime.now().microsecondsSinceEpoch}',
+      weatherIncluded: true,
+      results: [
+        for (var i = 0; i < scored.take(3).length; i++)
+          CropRecommendation(
+            rank: i + 1,
+            crop: scored[i].crop,
+            reasonBn: scored[i].reason,
+            score: scored[i].score,
+          ),
+      ],
+      district: district,
+      soilType: soilType,
+      season: season,
+      createdAt: DateTime.now(),
+    );
+    _saved.add(advice);
+    return advice;
+  }
+
+  _ScoredCrop _score(
+    _CropCandidate candidate, {
+    required String soilType,
+    required bool heavyRain,
+  }) {
+    var score = candidate.baseScore;
+    final reasons = <String>[
+      '${candidate.season} মৌসুমে ${candidate.cropBn} চাষের সময়',
+    ];
+
+    if (candidate.soils.contains(soilType)) {
+      score += 0.08;
+      reasons.add('$soilType এই ফসলের জন্য ভালো');
+    } else {
+      reasons.add('$soilType-এ ফলন কিছুটা কম হতে পারে');
+    }
+
+    if (heavyRain) {
+      if (candidate.wantsWater) {
+        score += 0.05;
+        reasons.add('ভারী বৃষ্টির সম্ভাবনা থাকায় পানি-প্রিয় এই ফসলের জন্য অনুকূল');
+      } else {
+        score -= 0.12;
+        reasons.add('ভারী বৃষ্টির পূর্বাভাসে জমিতে পানি জমার ঝুঁকি আছে');
+      }
+    }
+
+    return _ScoredCrop(
+      crop: candidate.crop,
+      score: double.parse(score.clamp(0.05, 0.99).toStringAsFixed(2)),
+      reason: '${reasons.join('। ')}।',
+    );
+  }
+
+  static const Map<String, List<_CropCandidate>> _candidates = {
+    Seasons.rabi: [
+      _CropCandidate(
+        crop: CropType.potato,
+        cropBn: 'আলু',
+        season: Seasons.rabi,
+        baseScore: 0.78,
+        soils: ['দোআঁশ মাটি', 'পলি মাটি', 'বেলে দোআঁশ'],
+        wantsWater: false,
+      ),
+      _CropCandidate(
+        crop: CropType.tomato,
+        cropBn: 'টমেটো',
+        season: Seasons.rabi,
+        baseScore: 0.70,
+        soils: ['দোআঁশ মাটি', 'পলি মাটি'],
+        wantsWater: false,
+      ),
+      _CropCandidate(
+        crop: CropType.rice,
+        cropBn: 'বোরো ধান',
+        season: Seasons.rabi,
+        baseScore: 0.62,
+        soils: ['এঁটেল মাটি', 'পলি মাটি'],
+        wantsWater: true,
+      ),
+    ],
+    Seasons.kharif1: [
+      _CropCandidate(
+        crop: CropType.rice,
+        cropBn: 'আউশ ধান',
+        season: Seasons.kharif1,
+        baseScore: 0.80,
+        soils: ['এঁটেল মাটি', 'দোআঁশ মাটি', 'পলি মাটি'],
+        wantsWater: true,
+      ),
+      _CropCandidate(
+        crop: CropType.tomato,
+        cropBn: 'টমেটো',
+        season: Seasons.kharif1,
+        baseScore: 0.58,
+        soils: ['বেলে দোআঁশ', 'দোআঁশ মাটি'],
+        wantsWater: false,
+      ),
+      _CropCandidate(
+        crop: CropType.potato,
+        cropBn: 'আলু',
+        season: Seasons.kharif1,
+        baseScore: 0.45,
+        soils: ['বেলে দোআঁশ'],
+        wantsWater: false,
+      ),
+    ],
+    Seasons.kharif2: [
+      _CropCandidate(
+        crop: CropType.rice,
+        cropBn: 'আমন ধান',
+        season: Seasons.kharif2,
+        baseScore: 0.82,
+        soils: ['এঁটেল মাটি', 'পলি মাটি', 'দোআঁশ মাটি'],
+        wantsWater: true,
+      ),
+      _CropCandidate(
+        crop: CropType.tomato,
+        cropBn: 'টমেটো',
+        season: Seasons.kharif2,
+        baseScore: 0.52,
+        soils: ['বেলে দোআঁশ', 'দোআঁশ মাটি'],
+        wantsWater: false,
+      ),
+      _CropCandidate(
+        crop: CropType.potato,
+        cropBn: 'আলু',
+        season: Seasons.kharif2,
+        baseScore: 0.40,
+        soils: ['বেলে দোআঁশ'],
+        wantsWater: false,
+      ),
+    ],
+  };
+
+  @override
+  Future<CropCalendar> calendar(CropType crop) async {
+    await _maybeFail(_config);
+    return CropCalendar.fromJson(_calendarSeed[crop.wire]!);
+  }
+
+  /// Windows by crop, in the `GET /calendar` wire shape. Rice has two seasons in
+  /// the ground at once (aus and aman), which is why a crop can carry two
+  /// planting windows.
+  static const Map<String, Map<String, dynamic>> _calendarSeed = {
+    'rice': {
+      'crop': 'rice',
+      'windows': [
+        {
+          'activity': 'planting',
+          'start_month': 3,
+          'end_month': 4,
+          'note_bn': 'বোরো ধান কাটার পরপরই আউশের বীজতলা',
+        },
+        {'activity': 'harvest', 'start_month': 7, 'end_month': 8},
+        {
+          'activity': 'planting',
+          'start_month': 6,
+          'end_month': 7,
+          'note_bn': 'আমন ধানের চারা রোপণ',
+        },
+        {'activity': 'harvest', 'start_month': 11, 'end_month': 12},
+      ],
+    },
+    'potato': {
+      'crop': 'potato',
+      'windows': [
+        {
+          'activity': 'planting',
+          'start_month': 11,
+          'end_month': 12,
+          'note_bn': 'রবি মৌসুমে আলুর বীজ বপন',
+        },
+        {
+          'activity': 'harvest',
+          'start_month': 2,
+          'end_month': 3,
+          'note_bn': 'নাবি ধসার ঝুঁকি এড়াতে সময়মতো তোলা জরুরি',
+        },
+      ],
+    },
+    'tomato': {
+      'crop': 'tomato',
+      'windows': [
+        {'activity': 'planting', 'start_month': 9, 'end_month': 10},
+        {'activity': 'harvest', 'start_month': 12, 'end_month': 1},
+      ],
+    },
+  };
+}
+
+class _CropCandidate {
+  const _CropCandidate({
+    required this.crop,
+    required this.cropBn,
+    required this.season,
+    required this.baseScore,
+    required this.soils,
+    required this.wantsWater,
+  });
+
+  final CropType crop;
+  final String cropBn;
+  final String season;
+  final double baseScore;
+  final List<String> soils;
+
+  /// True for crops that want standing water, which heavy rain helps.
+  final bool wantsWater;
+}
+
+class _ScoredCrop {
+  const _ScoredCrop({
+    required this.crop,
+    required this.score,
+    required this.reason,
+  });
+
+  final CropType crop;
+  final double score;
+  final String reason;
 }

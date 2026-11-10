@@ -9,20 +9,57 @@ import '../../core/theme/app_metrics.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
 import '../../core/utils/labels.dart';
-import '../../data/mock/mock_seed.dart';
+import '../../data/reference/locations.dart';
 import '../../data/models/enums.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Registration. The role chosen here decides which extra fields appear and
-/// whether the account lands in the waiting room (decision A7: vendor and expert
-/// need admin approval).
+/// whether the account lands in the waiting room (decision A7: all roles,
+/// including farmers, need admin approval).
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
+
+/// Identifies which input field carries an active validation error.
+enum _ErrorField {
+  name,
+  mobile,
+  district,
+  password,
+  shopName,
+  license,
+  specialization,
+  certification,
+  none,
+}
+
+/// Common passwords that must be rejected to prevent trivial brute-forcing.
+const _commonPasswords = {
+  '12345678',
+  '123456789',
+  '1234567890',
+  'password',
+  'password1',
+  'password123',
+  'passw0rd',
+  'qwerty123',
+  'letmein',
+  'iloveyou',
+  'welcome1',
+  'admin123',
+  'abc12345',
+  '11111111',
+  '00000000',
+  'bangladesh',
+  'agrisense',
+  'farmer123',
+  'vendor123',
+  'expert123',
+};
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _name = TextEditingController();
@@ -37,6 +74,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String? _district;
   bool _obscure = true;
   String? _localError;
+  _ErrorField _errorField = _ErrorField.none;
 
   @override
   void dispose() {
@@ -54,32 +92,110 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
+  void _setFieldError(_ErrorField field, String message) {
+    setState(() {
+      _localError = message;
+      _errorField = field;
+    });
+  }
+
+  void _clearError() {
+    if (_localError != null || _errorField != _ErrorField.none) {
+      setState(() {
+        _localError = null;
+        _errorField = _ErrorField.none;
+      });
+    }
+  }
+
   Future<void> _submit() async {
     final l = AppL10n.of(context);
-    setState(() => _localError = null);
+    _clearError();
 
-    if (_name.text.trim().isEmpty) {
-      setState(() => _localError = l.registerNameLabel);
+    // 1. Name validation
+    final nameTrimmed = _name.text.trim();
+    if (nameTrimmed.isEmpty) {
+      _setFieldError(_ErrorField.name, l.registerNameRequired);
       return;
     }
-    if (_mobile.text.trim().length != 11) {
-      setState(() => _localError = l.loginMobileHint);
+    if (nameTrimmed.length < 2) {
+      _setFieldError(_ErrorField.name, 'নাম কমপক্ষে ২ অক্ষরের হতে হবে।');
       return;
     }
-    if (_password.text.length < 8) {
-      setState(() => _localError = l.registerPasswordRule);
+
+    // 2. Mobile validation
+    final mobileTrimmed = _mobile.text.trim();
+    if (mobileTrimmed.length != 11 || !mobileTrimmed.startsWith('01')) {
+      _setFieldError(_ErrorField.mobile, l.registerMobileRequired);
       return;
     }
+
+    // 3. District validation
     if (_district == null) {
-      setState(() => _localError = l.registerDistrictHint);
+      _setFieldError(_ErrorField.district, l.registerDistrictRequired);
+      return;
+    }
+
+    // 4. Password validations (Strong password rules)
+    final pass = _password.text;
+    if (pass.length < 8) {
+      _setFieldError(_ErrorField.password, l.registerPasswordRule);
+      return;
+    }
+    if (!RegExp(r'[A-Za-z]').hasMatch(pass)) {
+      _setFieldError(_ErrorField.password, 'পাসওয়ার্ডে অন্তত একটি অক্ষর দিন।');
+      return;
+    }
+    if (!RegExp(r'\d').hasMatch(pass)) {
+      _setFieldError(_ErrorField.password, 'পাসওয়ার্ডে অন্তত একটি সংখ্যা দিন।');
+      return;
+    }
+    if (RegExp(r'^\d+$').hasMatch(pass)) {
+      _setFieldError(_ErrorField.password, l.registerPasswordWeak);
+      return;
+    }
+    if (_commonPasswords.contains(pass.toLowerCase())) {
+      _setFieldError(_ErrorField.password, l.registerPasswordCommon);
+      return;
+    }
+    final national = mobileTrimmed.length >= 10
+        ? mobileTrimmed.substring(mobileTrimmed.length - 10)
+        : mobileTrimmed;
+    if (pass.contains(mobileTrimmed) ||
+        (national.isNotEmpty && pass.contains(national))) {
+      _setFieldError(_ErrorField.password, l.registerPasswordHasMobile);
+      return;
+    }
+    final nameLower = nameTrimmed.toLowerCase();
+    if (nameLower.length >= 3 && pass.toLowerCase().contains(nameLower)) {
+      _setFieldError(
+          _ErrorField.password, 'পাসওয়ার্ডে নিজের নাম ব্যবহার করা যাবে না।');
+      return;
+    }
+
+    // 5. Role-specific validations
+    if (_role == Role.vendor && _shopName.text.trim().isEmpty) {
+      _setFieldError(_ErrorField.shopName, 'দোকানের নাম লিখুন।');
+      return;
+    }
+    if (_role == Role.vendor && _license.text.trim().isEmpty) {
+      _setFieldError(_ErrorField.license, 'ট্রেড লাইসেন্স নম্বর লিখুন।');
+      return;
+    }
+    if (_role == Role.expert && _specialization.text.trim().isEmpty) {
+      _setFieldError(_ErrorField.specialization, 'কোন বিষয়ে বিশেষজ্ঞ তা লিখুন।');
+      return;
+    }
+    if (_role == Role.expert && _certification.text.trim().isEmpty) {
+      _setFieldError(_ErrorField.certification, 'সনদ বা যোগ্যতার তথ্য লিখুন।');
       return;
     }
 
     final user = await ref.read(sessionProvider.notifier).register(
           RegisterRequest(
-            name: _name.text.trim(),
-            mobile: _mobile.text.trim(),
-            password: _password.text,
+            name: nameTrimmed,
+            mobile: mobileTrimmed,
+            password: pass,
             role: _role,
             district: _district!,
             shopName: _role == Role.vendor ? _shopName.text.trim() : null,
@@ -102,7 +218,59 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final l = AppL10n.of(context);
     final p = context.palette;
     final session = ref.watch(sessionProvider);
-    final error = session.hasError ? session.error : null;
+    final serverError = session.hasError ? session.error : null;
+
+    final isMobileConflict = serverError is ApiException &&
+        (serverError.code == 'conflict' || serverError.code == 'mobile_taken');
+
+    String? serverField(String field) => serverError is ApiException
+        ? serverError.fieldMessage(
+            field,
+            Localizations.localeOf(context).languageCode,
+          )
+        : null;
+
+    // Resolve field-level error texts (local validation takes priority, then server)
+    final nameError =
+        _errorField == _ErrorField.name ? _localError : serverField('name');
+    final mobileError = _errorField == _ErrorField.mobile
+        ? _localError
+        : (isMobileConflict ? l.phoneRegistered : serverField('mobile'));
+    final districtError =
+        _errorField == _ErrorField.district ? _localError : serverField('district');
+    final passwordError =
+        _errorField == _ErrorField.password ? _localError : serverField('password');
+    final shopNameError =
+        _errorField == _ErrorField.shopName ? _localError : serverField('shop_name');
+    final licenseError =
+        _errorField == _ErrorField.license ? _localError : serverField('license_no');
+    final specializationError =
+        _errorField == _ErrorField.specialization
+            ? _localError
+            : serverField('specialization');
+    final certificationError =
+        _errorField == _ErrorField.certification
+            ? _localError
+            : serverField('certification');
+
+    // General error note at bottom: shown for server-level or unmapped errors
+    String? generalError;
+    if (_localError != null && _errorField == _ErrorField.none) {
+      generalError = _localError;
+    } else if (serverError != null &&
+        !isMobileConflict &&
+        !(serverError is ApiException && serverError.details.isNotEmpty)) {
+      if (serverError is ApiException) {
+        generalError = serverError.serverMessageBn ??
+            (serverError.code == 'validation_error'
+                ? 'তথ্যগুলো আবার দেখুন — কিছু ঘরে সমস্যা আছে।'
+                : serverError.message(
+                    Localizations.localeOf(context).languageCode,
+                  ));
+      } else {
+        generalError = l.stateErrorBody;
+      }
+    }
 
     return Scaffold(
       backgroundColor: p.background,
@@ -119,7 +287,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             const SizedBox(height: Space.md),
             _RolePicker(
               selected: _role,
-              onChanged: (r) => setState(() => _role = r),
+              onChanged: (r) => setState(() {
+                _role = r;
+                _clearError();
+              }),
             ),
             const SizedBox(height: Space.sm),
             Row(
@@ -141,20 +312,27 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ],
             ),
             const SizedBox(height: Space.lg),
+
+            // 1. Name Field
             TextField(
               controller: _name,
               textInputAction: TextInputAction.next,
+              onChanged: (_) => _clearError(),
               decoration: InputDecoration(
                 labelText: l.registerNameLabel,
                 hintText: l.registerNameHint,
                 prefixIcon: const Icon(Icons.person_outline_rounded),
+                errorText: nameError,
               ),
             ),
             const SizedBox(height: Space.md),
+
+            // 2. Mobile Field
             TextField(
               controller: _mobile,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
+              onChanged: (_) => _clearError(),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 LengthLimitingTextInputFormatter(11),
@@ -163,32 +341,46 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 labelText: l.loginMobileLabel,
                 hintText: l.loginMobileHint,
                 prefixIcon: const Icon(Icons.phone_android_rounded),
+                errorText: mobileError,
               ),
             ),
             const SizedBox(height: Space.md),
+
+            // 3. District Field
             DropdownButtonFormField<String>(
               initialValue: _district,
               isExpanded: true,
               decoration: InputDecoration(
                 labelText: l.registerDistrictLabel,
                 prefixIcon: const Icon(Icons.place_outlined),
+                errorText: districtError,
               ),
               hint: Text(l.registerDistrictHint),
               items: [
                 for (final d in kDistricts)
                   DropdownMenuItem(value: d, child: Text(d)),
               ],
-              onChanged: (v) => setState(() => _district = v),
+              onChanged: (v) => setState(() {
+                _district = v;
+                _clearError();
+              }),
             ),
             const SizedBox(height: Space.md),
+
+            // 4. Password Field
             TextField(
               controller: _password,
               obscureText: _obscure,
+              onChanged: (_) => setState(() {
+                _localError = null;
+                _errorField = _ErrorField.none;
+              }),
               decoration: InputDecoration(
                 labelText: l.registerPasswordLabel,
                 hintText: l.registerPasswordHint,
                 helperText: l.registerPasswordRule,
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
+                errorText: passwordError,
                 suffixIcon: IconButton(
                   onPressed: () => setState(() => _obscure = !_obscure),
                   icon: Icon(
@@ -199,55 +391,68 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
               ),
             ),
+            if (_password.text.isNotEmpty) ...[
+              const SizedBox(height: Space.xxs),
+              _PasswordStrength(strength: _passwordStrength(_password.text)),
+            ],
+
+            // Vendor-specific fields
             if (_role == Role.vendor) ...[
               const SizedBox(height: Space.md),
               TextField(
                 controller: _shopName,
+                onChanged: (_) => _clearError(),
                 decoration: InputDecoration(
                   labelText: l.registerShopNameLabel,
                   prefixIcon: const Icon(Icons.storefront_rounded),
+                  errorText: shopNameError,
                 ),
               ),
               const SizedBox(height: Space.md),
               TextField(
                 controller: _license,
+                onChanged: (_) => _clearError(),
                 decoration: InputDecoration(
                   labelText: l.registerLicenseLabel,
                   prefixIcon: const Icon(Icons.description_outlined),
+                  errorText: licenseError,
                 ),
               ),
             ],
+
+            // Expert-specific fields
             if (_role == Role.expert) ...[
               const SizedBox(height: Space.md),
               TextField(
                 controller: _specialization,
+                onChanged: (_) => _clearError(),
                 decoration: InputDecoration(
                   labelText: l.registerSpecializationLabel,
                   prefixIcon: const Icon(Icons.workspace_premium_outlined),
+                  errorText: specializationError,
                 ),
               ),
               const SizedBox(height: Space.md),
               TextField(
                 controller: _certification,
+                onChanged: (_) => _clearError(),
                 decoration: InputDecoration(
                   labelText: l.registerCertificationLabel,
                   prefixIcon: const Icon(Icons.verified_outlined),
+                  errorText: certificationError,
                 ),
               ),
             ],
+
             const SizedBox(height: Space.lg),
-            if (_localError != null || error != null)
+
+            // General error banner (if not attached to a single input field)
+            if (generalError != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: Space.sm),
-                child: _ErrorNote(
-                  text: _localError ??
-                      (error is ApiException
-                          ? (error.code == 'conflict'
-                              ? l.loginFailed
-                              : l.stateErrorBody)
-                          : l.stateErrorBody),
-                ),
+                child: _ErrorNote(text: generalError),
               ),
+
             AppButton(
               label: l.registerSubmit,
               isLoading: session.isLoading,
@@ -376,6 +581,61 @@ class _RolePicker extends StatelessWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+}
+
+int _passwordStrength(String value) {
+  if (value.isEmpty) return 0;
+  var score = 0;
+  if (value.length >= 8) score++;
+  if (RegExp(r'[A-Za-z]').hasMatch(value) && RegExp(r'\d').hasMatch(value)) {
+    score++;
+  }
+  if (value.length >= 12 || RegExp(r'[^A-Za-z0-9]').hasMatch(value)) score++;
+  return score.clamp(0, 3);
+}
+
+class _PasswordStrength extends StatelessWidget {
+  const _PasswordStrength({required this.strength});
+
+  final int strength;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final english = Localizations.localeOf(context).languageCode == 'en';
+    final label = switch (strength) {
+      >= 3 => english ? 'Strong password' : 'শক্তিশালী পাসওয়ার্ড',
+      2 => english ? 'Medium password' : 'মাঝারি পাসওয়ার্ড',
+      _ => english ? 'Weak password' : 'দুর্বল পাসওয়ার্ড',
+    };
+    final color = strength >= 3
+        ? p.success
+        : strength == 2
+            ? p.primary
+            : p.error;
+
+    return Row(
+      children: [
+        for (var i = 0; i < 3; i++) ...[
+          Expanded(
+            child: Container(
+              height: 4,
+              decoration: BoxDecoration(
+                color: i < strength ? color : p.outline,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          if (i < 2) const SizedBox(width: 4),
+        ],
+        const SizedBox(width: Space.xs),
+        Text(
+          label,
+          style: context.texts.bodySmall?.copyWith(color: color),
+        ),
       ],
     );
   }

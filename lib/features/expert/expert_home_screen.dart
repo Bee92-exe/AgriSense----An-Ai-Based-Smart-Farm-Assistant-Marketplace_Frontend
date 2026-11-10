@@ -400,37 +400,44 @@ class _ArticleCard extends StatelessWidget {
                         style: context.texts.labelSmall,
                       ),
                     ),
-                    StaffRating(
-                      rating: article.rating,
-                      count: article.ratingCount,
-                      size: 13,
-                    ),
                   ],
                 ),
                 const SizedBox(height: Space.xxs),
                 Row(
                   children: [
-                    _CountAction(
-                      icon: article.liked
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      label: f.number(article.likes),
-                      onTap: onLike,
-                      color: article.liked ? p.error : p.onSurfaceMuted,
+                    // The counters and the rating wrap: at 320dp with Bangla at
+                    // 1.3x they cannot share a line with the save button.
+                    Expanded(
+                      child: Wrap(
+                        spacing: Space.sm,
+                        runSpacing: 2,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _CountAction(
+                            icon: article.liked
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            label: f.number(article.likes),
+                            onTap: onLike,
+                            color: article.liked ? p.error : p.onSurfaceMuted,
+                          ),
+                          _CountAction(
+                            icon: Icons.mode_comment_outlined,
+                            label: f.number(article.comments.length),
+                            onTap: onTap,
+                          ),
+                          _CountAction(
+                            icon: Icons.visibility_outlined,
+                            label: f.number(article.views),
+                            onTap: onTap,
+                          ),
+                          _RatingTag(
+                            label: '${article.rating.toStringAsFixed(1)} '
+                                '(${f.number(article.ratingCount)})',
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: Space.sm),
-                    _CountAction(
-                      icon: Icons.mode_comment_outlined,
-                      label: f.number(article.comments.length),
-                      onTap: onTap,
-                    ),
-                    const SizedBox(width: Space.sm),
-                    _CountAction(
-                      icon: Icons.visibility_outlined,
-                      label: f.number(article.views),
-                      onTap: onTap,
-                    ),
-                    const Spacer(),
                     IconButton(
                       tooltip:
                           article.saved ? l.expertUnsave : l.expertSave,
@@ -527,6 +534,35 @@ class _CountAction extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A star and a short rating line that shrinks instead of overflowing when the
+/// card is narrow or the reader has a large text scale.
+class _RatingTag extends StatelessWidget {
+  const _RatingTag({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.star_rounded, size: 15, color: p.harvest),
+        const SizedBox(width: 2),
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.texts.labelSmall?.copyWith(color: p.onSurfaceMuted),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1089,9 +1125,9 @@ class _QuestionCard extends ConsumerWidget {
               OpsPill(label: modeLabel, tone: modeTone),
               if (question.mode == 'call' || question.mode == 'video')
                 AppButton(
-                  label: question.mode == 'video'
-                      ? l.staffVideo
-                      : l.staffCall,
+                  // The pill beside it already names the channel, so the
+                  // action says what the tap does instead of repeating it.
+                  label: l.expertConnectNow,
                   icon: modeIcon,
                   tone: AppButtonTone.secondary,
                   expand: false,
@@ -1560,14 +1596,15 @@ class _PlanCard extends ConsumerWidget {
             style: context.texts.titleMedium?.copyWith(color: p.primary),
           ),
           const SizedBox(height: Space.xxs),
-          Row(
+          Wrap(
+            spacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Icon(
                 Icons.people_alt_rounded,
                 size: 16,
                 color: p.onSurfaceMuted,
               ),
-              const SizedBox(width: 4),
               Text(
                 l.expertSubscribersCount(f.number(plan.subscribers)),
                 style: context.texts.bodySmall
@@ -1669,51 +1706,49 @@ class _PeerCard extends ConsumerWidget {
     final p = context.palette;
 
     return AppCard(
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          StaffAvatar(initials: staffInitials(peer.name)),
-          const SizedBox(width: Space.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  peer.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.texts.titleSmall,
-                ),
-                Text(
-                  '${peer.specialization} · ${peer.district}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.texts.bodySmall
-                      ?.copyWith(color: p.onSurfaceMuted),
-                ),
-                Row(
+          Row(
+            children: [
+              StaffAvatar(initials: staffInitials(peer.name)),
+              const SizedBox(width: Space.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.star_rounded, size: 15, color: p.harvest),
-                    const SizedBox(width: 2),
                     Text(
-                      '${peer.rating.toStringAsFixed(1)} · '
-                      '${l.expertFollowersCount(f.number(peer.followers))}',
-                      style: context.texts.labelSmall
+                      peer.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.texts.titleSmall,
+                    ),
+                    Text(
+                      '${peer.specialization} · ${peer.district}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.texts.bodySmall
                           ?.copyWith(color: p.onSurfaceMuted),
+                    ),
+                    const SizedBox(height: 2),
+                    _RatingTag(
+                      label: '${peer.rating.toStringAsFixed(1)} · '
+                          '${l.expertFollowersCount(f.number(peer.followers))}',
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+          const SizedBox(height: Space.xs),
+          // Below the identity row, not beside it: at 320dp the label plus a
+          // full avatar leaves no room for a side-by-side button.
           AppButton(
             label: peer.connected ? l.expertConnected : l.expertConnect,
             tone:
                 peer.connected ? AppButtonTone.quiet : AppButtonTone.secondary,
-            expand: false,
             onPressed: () async {
-              await ref
-                  .read(expertRepositoryProvider)
-                  .toggleConnect(peer.id);
+              await ref.read(expertRepositoryProvider).toggleConnect(peer.id);
               ref.invalidate(expertDeskProvider);
             },
           ),

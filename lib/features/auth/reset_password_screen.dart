@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,14 +9,14 @@ import '../../core/router/app_router.dart';
 import '../../core/theme/app_metrics.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_button.dart';
-import '../../data/providers.dart';
+import '../../data/repositories/auth_repository.dart';
 import '../../l10n/app_localizations.dart';
 
-/// FR-3: request an OTP, enter it, set a new password.
+/// Password reset while SMS delivery is deferred.
 ///
-/// Modelled as an explicit two-step state rather than separate routes, because
-/// the OTP is only valid inside this flow and going back must not leave a stale
-/// code armed.
+/// The API issues a one-time code in development and prints it to the server
+/// log; production refuses the request until a paid SMS provider is configured.
+/// The screen never pretends an SMS was sent.
 enum _Step { request, verify, done }
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
@@ -28,49 +29,66 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _mobile = TextEditingController();
-  final _otp = TextEditingController();
+  final _token = TextEditingController();
   final _password = TextEditingController();
 
   _Step _step = _Step.request;
   bool _busy = false;
   bool _failed = false;
+  String? _requestError;
 
   @override
   void dispose() {
     _mobile.dispose();
-    _otp.dispose();
+    _token.dispose();
     _password.dispose();
     super.dispose();
   }
 
-  Future<void> _requestOtp() async {
+  Future<void> _requestReset() async {
+    final l = AppL10n.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     setState(() {
       _busy = true;
       _failed = false;
+      _requestError = null;
     });
+
     try {
-      await ref.read(authRepositoryProvider).requestOtp(_mobile.text.trim());
+      await ref
+          .read(sessionProvider.notifier)
+          .requestPasswordReset(_mobile.text.trim());
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _step = _Step.verify;
+      });
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _requestError = error.message(locale);
+      });
     } catch (_) {
-      // The request endpoint is deliberately generic: it must not reveal whether
-      // the number exists, so a failure here is not shown either.
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _requestError = l.resetRequestFailed;
+      });
     }
-    if (!mounted) return;
-    setState(() {
-      _busy = false;
-      _step = _Step.verify;
-    });
   }
 
-  Future<void> _submitOtp() async {
+  Future<void> _submitReset() async {
     setState(() {
       _busy = true;
       _failed = false;
     });
+
     final ok = await ref.read(sessionProvider.notifier).resetPassword(
-          mobile: _mobile.text.trim(),
-          otp: _otp.text.trim(),
+          token: _token.text.trim(),
           newPassword: _password.text,
         );
+
     if (!mounted) return;
     setState(() {
       _busy = false;
@@ -82,10 +100,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppL10n.of(context);
-    final p = context.palette;
 
     return Scaffold(
-      backgroundColor: p.background,
+      backgroundColor: context.palette.background,
       appBar: AppBar(title: Text(l.loginForgot)),
       body: SafeArea(
         top: false,
@@ -94,7 +111,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           children: [
             switch (_step) {
               _Step.request => _mobileStep(l),
-              _Step.verify => _otpStep(l),
+              _Step.verify => _verifyStep(l),
               _Step.done => _doneStep(l),
             },
           ],
@@ -107,7 +124,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l.loginSubtitle,
+            l.resetRequestBody,
             style: context.texts.bodyMedium
                 ?.copyWith(color: context.palette.onSurfaceMuted),
           ),
@@ -123,36 +140,45 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               labelText: l.loginMobileLabel,
               hintText: l.loginMobileHint,
               prefixIcon: const Icon(Icons.phone_android_rounded),
+              errorText: _requestError,
             ),
           ),
           const SizedBox(height: Space.lg),
           AppButton(
-            label: l.otpResend,
+            label: l.resetRequestAction,
             isLoading: _busy,
-            onPressed: _mobile.text.trim().length == 11 ? _requestOtp : null,
+            onPressed: _mobile.text.trim().length == 11 ? _requestReset : null,
           ),
+          const SizedBox(height: Space.xs),
+          if (kDebugMode)
+            Text(
+              l.resetDevNote,
+              textAlign: TextAlign.center,
+              style: context.texts.bodySmall
+                  ?.copyWith(color: context.palette.onSurfaceMuted),
+            ),
         ],
       );
 
-  Widget _otpStep(AppL10n l) => Column(
+  Widget _verifyStep(AppL10n l) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l.otpBody(_mobile.text.trim()),
+            l.resetCodeSent(_mobile.text.trim()),
             style: context.texts.bodyMedium
                 ?.copyWith(color: context.palette.onSurfaceMuted),
           ),
           const SizedBox(height: Space.lg),
           TextField(
-            controller: _otp,
-            keyboardType: TextInputType.number,
+            controller: _token,
+            keyboardType: TextInputType.visiblePassword,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-              LengthLimitingTextInputFormatter(6),
+              FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
+              LengthLimitingTextInputFormatter(200),
             ],
             decoration: InputDecoration(
-              labelText: l.otpLabel,
-              hintText: l.otpHint,
+              labelText: l.resetCodeLabel,
+              hintText: l.resetCodeHint,
               prefixIcon: const Icon(Icons.password_rounded),
             ),
           ),
@@ -164,18 +190,18 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               labelText: l.registerPasswordLabel,
               helperText: l.registerPasswordRule,
               prefixIcon: const Icon(Icons.lock_outline_rounded),
-              errorText: _failed ? l.otpInvalid : null,
+              errorText: _failed ? l.resetInvalid : null,
             ),
           ),
           const SizedBox(height: Space.lg),
           AppButton(
-            label: l.otpSubmit,
+            label: l.resetSubmit,
             isLoading: _busy,
-            onPressed: _submitOtp,
+            onPressed: _submitReset,
           ),
           TextButton(
-            onPressed: _requestOtp,
-            child: Text(l.otpResend),
+            onPressed: _requestReset,
+            child: Text(l.resetRequestAction),
           ),
         ],
       );
@@ -191,9 +217,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
           ),
           const SizedBox(height: Space.md),
           Text(
-            l.profileSaved,
+            l.resetDoneTitle,
             textAlign: TextAlign.center,
             style: context.texts.titleLarge,
+          ),
+          const SizedBox(height: Space.xs),
+          Text(
+            l.resetDoneBody,
+            textAlign: TextAlign.center,
+            style: context.texts.bodyMedium
+                ?.copyWith(color: context.palette.onSurfaceMuted),
           ),
           const SizedBox(height: Space.lg),
           AppButton(

@@ -74,6 +74,12 @@
   "registerPasswordLabel": "Password",
   "registerPasswordHint": "At least 8 characters",
   "registerPasswordRule": "Use at least 8 characters.",
+  "registerPasswordWeak": "Password must not be only numbers. Mix letters and numbers.",
+  "registerPasswordCommon": "That password is too common. Choose something harder to guess.",
+  "registerPasswordHasMobile": "Password must not contain your mobile number.",
+  "registerNameRequired": "Please enter your name.",
+  "registerMobileRequired": "Enter a valid 11-digit mobile number.",
+  "registerDistrictRequired": "Please choose your district.",
   "registerSubmit": "Create account",
   "registerShopNameLabel": "Shop name",
   "registerLicenseLabel": "Trade licence number",
@@ -87,6 +93,18 @@
   "otpSubmit": "Verify",
   "otpResend": "Send the code again",
   "otpInvalid": "That code is not right. Please check it.",
+  "phoneRegistered": "An account already exists for this number.",
+  "resetRequestBody": "Enter your mobile number. In development, the reset code is printed in the API server log.",
+  "resetRequestAction": "Request reset code",
+  "resetCodeSent": "A reset code was issued for {mobile}",
+  "resetCodeLabel": "Reset code",
+  "resetCodeHint": "Code from the API server log",
+  "resetSubmit": "Reset password",
+  "resetInvalid": "That code is invalid or expired.",
+  "resetRequestFailed": "Could not request a reset code. Try again.",
+  "resetDoneTitle": "Password updated",
+  "resetDoneBody": "Sign in with your new password.",
+  "resetDevNote": "In development, the reset code is in the API server log.",
   "pendingTitle": "Waiting for approval",
   "pendingBody": "Your application is being checked. We will tell you once it is approved.",
   "pendingCheckStatus": "Check status",
@@ -118,9 +136,9 @@
   "homeTileCheckCrop": "Check crop",
   "homeTileCheckCropHint": "Photograph a leaf to find the disease",
   "homeTileAsk": "Ask by voice",
-  "homeTileAskHint": "Ask a question in Bangla",
+  "homeTileAskHint": "Speak a question, hear the answer",
   "homeTileAdvice": "Crop advice",
-  "homeTileAdviceHint": "What to plant this season",
+  "homeTileAdviceHint": "By soil and season",
   "homeTileWeather": "Weather",
   "homeTileWeatherHint": "Rain and heat warnings",
   "homeTileNews": "Krishi Barta",
@@ -164,6 +182,8 @@
   "diagnosisSentToExpert": "Your photo has been sent to an expert.",
   "diagnosisExpertReviewed": "Verified by an expert",
   "diagnosisLowTitle": "Not sure enough",
+  "diagnosisNotLeafTitle": "This is not a crop leaf",
+  "diagnosisNotLeafBody": "We could not find a crop leaf in this photo. Move closer to the affected leaf, use good light, and keep the photo sharp.",
   "diagnosisLowBody": "The disease could not be identified from this photo, so no name is shown. Take a new photo, or send it to an expert.",
   "diagnosisMediumCaution": "I am not fully sure. If in doubt, ask an expert.",
   "diagnosisHealthyTitle": "This plant looks healthy",
@@ -250,6 +270,9 @@
   "newsCategoryPest": "Pest",
   "newsCategoryVirus": "Virus",
   "newsCategoryNutrient": "Nutrient deficiency",
+  "newsCategoryWeather": "Weather",
+  "newsCategoryMarket": "Market price",
+  "newsCategoryAdvisory": "Advisory",
   "comingSoon": "Coming soon",
   "comingSoonBody": "This part is still being built.",
   "homeTileOrdersHint": "Track what you bought",
@@ -264,5 +287,728 @@
   "profileAnimationHint": "The sky and crops move slowly",
   "homeAnimationOn": "Animation on",
   "homeAnimationOff": "Animation off",
-  "homeSkyRain": "A rainy sky today"
+  "homeSkyRain": "A rainy sky today",
+  "voiceNoSpeech": "Voice cannot be used on this device. Type below, or use the buttons.",
+  "voiceTypeInstead": "Can't speak? Type it here",
+  "voiceOpening": "Opening {screen}",
+  "@voiceOpening": {
+    "placeholders": {
+      "screen": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceAnswerTitle": "AI answer",
+  "voiceChooseProduct": "Which product? Pick one below",
+  "voiceFound": "{term}: {count} found",
+  "@voiceFound": {
+    "placeholders": {
+      "term": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceWeatherSummary": "Today in {district}: {temp} degrees, {condition}",
+  "@voiceWeatherSummary": {
+    "placeholders": {
+      "district": {
+        "type": "String"
+      },
+      "temp": {
+        "type": "String"
+      },
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  "voicePriceLine": "{name}, {price}",
+  "@voicePriceLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "voicePlaceOrder": "I will order {qty} of {product}. Confirm if that is right.",
+  "@voicePlaceOrder": {
+    "placeholders": {
+      "product": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "voiceConfirmYes": "Yes, place the order",
+  "adviceTitle": "Crop advice",
+  "adviceIntro": "Tell me the soil and the season — I will match your district's weather and suggest three crops.",
+  "adviceSoil": "Soil type",
+  "adviceSeason": "Season",
+  "adviceSeasonAuto": "This month's season",
+  "adviceDistrict": "District",
+  "adviceAction": "Get advice",
+  "adviceResultsTitle": "Three crops for you",
+  "adviceWeatherIncluded": "Your district's weather was included",
+  "adviceWeatherMissing": "Weather could not be included — soil and season only",
+  "adviceRank": "Rank {rank}",
+  "adviceCalendar": "Seasonal calendar",
+  "adviceSavedTitle": "Earlier advice",
+  "adviceSavedEmpty": "No advice has been taken yet.",
+  "adviceIntroShort": "Pick a soil type, then get advice.",
+  "calendarTitle": "Seasonal calendar",
+  "calendarPlanting": "Sowing / planting",
+  "calendarHarvest": "Harvest",
+  "calendarLegend": "Shaded months have work in them",
+  "calendarEmpty": "No calendar has been added for this crop yet.",
+  "calendarMonth": "Month {month}",
+  "assistantTitle": "Farming assistant",
+  "assistantIntro": "Ask anything about crop disease, fertiliser or pests. Answers come from the verified knowledge base.",
+  "assistantAsk": "Type your question",
+  "assistantMicHint": "Speak your question",
+  "assistantListening": "Listening…",
+  "assistantThinking": "Looking for an answer…",
+  "assistantSources": "Sources",
+  "assistantNoAnswerTitle": "I do not have that answer",
+  "assistantNoAnswerBody": "I will not guess. Send it to an expert and an agronomist will reply.",
+  "assistantOfferExpert": "Send to an expert",
+  "assistantSentToExpert": "Your question has been sent to an expert.",
+  "assistantHistoryTitle": "Earlier questions",
+  "assistantHistoryEmpty": "No questions asked yet.",
+  "assistantYouAsked": "You asked: {question}",
+  "@adviceRank": {
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "@calendarMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "@assistantYouAsked": {
+    "placeholders": {
+      "question": {
+        "type": "String"
+      }
+    }
+  },
+  "adviceDisclaimer": "This is advice, not a final recommendation. Check your own soil before deciding.",
+  "actionEdit": "Edit",
+  "actionDelete": "Delete",
+  "vendorAddProduct": "Add product",
+  "vendorEditProduct": "Edit product",
+  "vendorProductName": "Product name",
+  "vendorProductNameBn": "Name (Bangla)",
+  "vendorProductCategory": "Category",
+  "vendorProductPrice": "Price (taka)",
+  "vendorProductStock": "Stock",
+  "vendorProductDescription": "Description",
+  "vendorProductSaved": "Product saved",
+  "vendorProductDeleted": "Product removed",
+  "vendorFieldRequired": "This field is required.",
+  "vendorPriceInvalid": "Price must be more than zero.",
+  "vendorStockInvalid": "Stock must be zero or more.",
+  "vendorLowStock": "Low stock",
+  "vendorOutOfStock": "Out of stock",
+  "vendorStockMinus": "Decrease by one",
+  "vendorStockPlus": "Increase by one",
+  "vendorStockFine": "Every product is well stocked.",
+  "vendorLowStockTitle": "Stock to watch",
+  "vendorNoProducts": "No products yet",
+  "vendorNoProductsBody": "Add your first product and farmers will see it in Haat Bazar.",
+  "vendorVerifiedHint": "Your shop is verified — you can list products.",
+  "vendorBlockedBody": "You can list products and accept orders once an admin has verified the shop.",
+  "vendorInvalidTransition": "That step is not possible yet.",
+  "vendorTodayOrders": "Today's orders",
+  "vendorTodayRevenue": "Today's revenue",
+  "vendorPendingOrders": "Pending orders",
+  "vendorRatingsTitle": "Buyer ratings",
+  "vendorRecentOrders": "Recent orders",
+  "vendorNoOrders": "No orders yet",
+  "vendorNoOrdersBody": "Orders from farmers will appear here.",
+  "vendorOrderUpdated": "Order status updated",
+  "vendorAcceptOrder": "Accept order",
+  "vendorRejectOrder": "Reject",
+  "vendorShipOrder": "Mark shipped",
+  "vendorDeliverOrder": "Mark delivered",
+  "vendorRejectTitle": "Why is this order rejected?",
+  "vendorRejectHint": "e.g. the item is out of stock",
+  "expertTabPending": "Waiting ({count})",
+  "@expertTabPending": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "waiting case count, already formatted"
+      }
+    }
+  },
+  "expertTabResolved": "Done ({count})",
+  "@expertTabResolved": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "resolved case count, already formatted"
+      }
+    }
+  },
+  "expertQueueEmpty": "Nothing waiting for review",
+  "expertQueueEmptyBody": "Uncertain photos will show up here.",
+  "expertResolved": "Done",
+  "expertNeedsRetake": "Needs a new photo",
+  "expertAiGuess": "AI's guess (the farmer never sees this)",
+  "expertConfirmDisease": "Confirm the disease",
+  "expertPickDisease": "Which disease is it?",
+  "expertHealthy": "Healthy",
+  "expertNote": "Note for the farmer",
+  "expertCropUnknown": "Crop unknown",
+  "expertRetakeTitle": "What should the farmer do?",
+  "expertRetakeHint": "e.g. take a clear photo of one leaf in daylight",
+  "expertSend": "Send",
+  "expertRequestSent": "The farmer was told",
+  "expertNewsEmpty": "Nothing in this list",
+  "expertNewsEmptyBody": "New drafts will appear here.",
+  "draftNeedsWriting": "Needs writing",
+  "draftInProgress": "Draft",
+  "draftPublished": "Published",
+  "draftRejected": "Rejected",
+  "expertAddManual": "Write a news item",
+  "expertDraftCreated": "Draft created",
+  "expertSuggestSource": "Suggest a source",
+  "expertSourceSuggested": "Suggestion sent to the admin",
+  "expertSourceName": "Source name",
+  "expertSourceUrl": "Website",
+  "expertSourceNote": "Why it is useful (note)",
+  "expertSendSuggestion": "Send suggestion",
+  "expertUrgent": "Urgent",
+  "expertEditNews": "Edit news item",
+  "expertNewsTitle": "Title",
+  "expertNewsSummary": "Summary",
+  "expertNewsSymptoms": "Symptoms",
+  "expertNewsAction": "What the farmer should do",
+  "expertNewsSource": "Source",
+  "expertNewsCrop": "Crop",
+  "expertNewsCategory": "Category",
+  "expertNewsSeverity": "Severity",
+  "expertSaveDraft": "Save draft",
+  "expertPublish": "Publish",
+  "expertPublishUrgent": "Publish as urgent",
+  "expertPublishTitle": "How should this be published?",
+  "expertPublishBody": "Urgent items are pushed to farmers' phones.",
+  "expertPublished": "Published",
+  "expertReject": "Reject",
+  "expertRejectTitle": "Why is it rejected?",
+  "expertRejectHint": "e.g. the source does not support this",
+  "expertRejected": "Rejected",
+  "expertKnowledgeSearch": "Search a disease or a protocol",
+  "expertKnowledgeEmpty": "Nothing in the knowledge base",
+  "expertKnowledgeEmptyBody": "Try another word, or wait for new entries.",
+  "expertKnowledgeEditTitle": "Edit knowledge entry",
+  "expertKnowledgeProtocol": "Treatment protocol",
+  "expertKnowledgeSource": "Source (BRRI, DAE…)",
+  "expertKnowledgeSafety": "Safety note",
+  "expertKnowledgeReindex": "Saved — the change is being added to the search index.",
+  "accountStatusActive": "Active",
+  "accountStatusPending": "Pending approval",
+  "accountStatusSuspended": "Suspended",
+  "accountStatusRemoved": "Removed",
+  "vendorPendingReview": "Awaiting approval",
+  "vendorRejected": "Rejected",
+  "vendorSuspended": "Suspended",
+  "adminLicense": "Trade licence",
+  "adminVerify": "Verify",
+  "adminReject": "Reject",
+  "adminSuspend": "Suspend",
+  "adminResetPassword": "Reset password",
+  "adminResetPasswordBody": "This temporary password is shown once. Give it to the user and ask them to change it after signing in.",
+  "adminReinstate": "Reinstate",
+  "adminRejectTitle": "Why is it rejected?",
+  "adminSuspendTitle": "Why is it suspended?",
+  "adminReasonHint": "The user will be told this reason",
+  "adminVendorUpdated": "Vendor status updated",
+  "adminVendorEmpty": "No vendors in this list",
+  "adminVendorEmptyBody": "Try another status.",
+  "adminUserSearch": "Name, mobile or district",
+  "adminUserEmpty": "No accounts match",
+  "adminUserEmptyBody": "Change the search or the filters.",
+  "adminActivate": "Activate",
+  "adminUserUpdated": "Account status updated",
+  "adminSourceEmpty": "No sources added",
+  "adminSourceEmptyBody": "Add a news source and collection can start.",
+  "adminAddSource": "Add source",
+  "adminEditSource": "Edit source",
+  "adminSourceName": "Source name",
+  "adminSourceUrl": "Feed URL",
+  "adminSourceUrlInvalid": "The URL must start with http.",
+  "adminSourceType": "Source type",
+  "adminSourceSaved": "Source saved",
+  "adminSourceOn": "Collection on",
+  "adminSourceOff": "Collection off",
+  "adminSourceNeverRun": "Never collected",
+  "adminSourceFailed": "Last collection failed",
+  "adminSourceDeleteTitle": "Remove this source?",
+  "adminSourceRemoved": "Source removed",
+  "adminScheduleTitle": "Collection schedule",
+  "adminScheduleEnabled": "Collect automatically",
+  "adminScheduleSaved": "Schedule saved",
+  "adminIntervalUp": "Longer interval",
+  "adminIntervalDown": "Shorter interval",
+  "adminRunNow": "Collect now",
+  "adminRunDone": "Collection finished",
+  "adminLogsEmpty": "No logs of this kind",
+  "adminLogsEmptyBody": "Try another type.",
+  "logTypeSystem": "System",
+  "logTypeCollection": "Collection",
+  "logTypeVoice": "Voice",
+  "logTypeAiFallback": "AI fallback",
+  "logTypeAudit": "Audit",
+  "sourceTypeGovernment": "Government",
+  "sourceTypeResearch": "Research",
+  "sourceTypeNewsPortal": "News portal",
+  "vendorDeleteTitle": "Remove product?",
+  "vendorStockLeft": "Stock {count}",
+  "@vendorStockLeft": {
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "description": "stock quantity, already formatted"
+      }
+    }
+  },
+  "vendorRatingAverage": "Average {rating} · {count} ratings",
+  "@vendorRatingAverage": {
+    "placeholders": {
+      "rating": {
+        "type": "String",
+        "description": "average rating, one decimal"
+      },
+      "count": {
+        "type": "String",
+        "description": "number of ratings, already formatted"
+      }
+    }
+  },
+  "expertKnowledgeVersion": "Version {version}",
+  "@expertKnowledgeVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "description": "entry version number"
+      }
+    }
+  },
+  "adminSubmitted": "Submitted {date}",
+  "@adminSubmitted": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "description": "submission date, already formatted"
+      }
+    }
+  },
+  "adminSourceLastRun": "Last collected {time}",
+  "@adminSourceLastRun": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "last run timestamp, already formatted"
+      }
+    }
+  },
+  "adminSourceDeleteConfirm": "{name} will no longer be collected.",
+  "@adminSourceDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "source name"
+      }
+    }
+  },
+  "adminScheduleInterval": "Every {hours} hours",
+  "@adminScheduleInterval": {
+    "placeholders": {
+      "hours": {
+        "type": "String",
+        "description": "interval in hours, already formatted"
+      }
+    }
+  },
+  "adminScheduleNext": "Next run {time}",
+  "@adminScheduleNext": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "description": "next run timestamp, already formatted"
+      }
+    }
+  },
+  "vendorDeleteConfirm": "{name} will be removed. Past orders keep their record.",
+  "@vendorDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "vendor product name"
+      }
+    }
+  },
+  "pendingPromise": "Your request is being reviewed — we will let you know within 24 hours.",
+  "pendingStepSubmitted": "Application received",
+  "pendingStepReview": "An admin is reviewing it",
+  "pendingStepReviewBody": "Usually within 24 hours.",
+  "pendingStepLive": "Account activated",
+  "registerApprovalNote": "Every new account is checked by an admin before it goes live. This usually takes under 24 hours.",
+  "staffQuickActions": "Quick actions",
+  "staffComingSoon": "The interface is ready — calling arrives with the backend.",
+  "staffCall": "Call",
+  "staffMessage": "Message",
+  "staffVideo": "Video call",
+  "staffCompleted": "Completed",
+  "staffNeedsAction": "Needs action",
+  "vendorConsoleEyebrow": "Vendor console",
+  "vendorConsoleSubtitle": "Today's orders, stock and customers — all in one place.",
+  "vendorProductsSubtitle": "Price, stock and photos for every listing.",
+  "vendorOrdersSubtitle": "Accept, ship and deliver — only the next valid step.",
+  "vendorBusiness": "Business",
+  "vendorBusinessSubtitle": "Sales, profit, payouts and your customer book.",
+  "vendorCustomerBook": "Customers",
+  "vendorCustomers": "Total customers",
+  "vendorRepeatCustomers": "Repeat buyers",
+  "vendorCustomerSearch": "Search name, mobile or district",
+  "vendorFollowUpCount": "{count} customers need a follow-up",
+  "@vendorFollowUpCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorFollowUpBody": "A quick call keeps a buyer from drifting to another shop.",
+  "vendorFollowUpHint": "Show this customer in the follow-up list.",
+  "vendorMarkFollowUp": "Follow-up needed",
+  "vendorNoCustomers": "No customers yet",
+  "vendorNoCustomersBody": "A customer appears here after their first delivered order.",
+  "vendorCustomerNote": "Private note",
+  "vendorNoteHint": "What should the shop remember about this customer?",
+  "vendorNoteSaved": "Customer note saved",
+  "vendorLifetimeValue": "Lifetime value",
+  "vendorLastOrder": "Last order",
+  "vendorOrdersCount": "{count} orders",
+  "@vendorOrdersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorSegmentNew": "New",
+  "vendorSegmentRepeat": "Returning",
+  "vendorSegmentLoyal": "Loyal",
+  "vendorSegmentAtRisk": "At risk",
+  "vendorMoney": "Money",
+  "vendorRevenue30": "Revenue (30 days)",
+  "vendorProfit30": "Profit (30 days)",
+  "vendorCommission": "Platform commission",
+  "vendorPendingPayout": "Pending payout",
+  "vendorPayouts": "Payout history",
+  "vendorPayoutPaid": "Paid",
+  "vendorTopProducts": "Best sellers",
+  "vendorUnits": "{units} units",
+  "@vendorUnits": {
+    "placeholders": {
+      "units": {
+        "type": "String"
+      }
+    }
+  },
+  "vendorWeekSales": "Sales this week",
+  "vendorStoreVisits": "Store visits",
+  "vendorConversion": "Conversion",
+  "vendorOrders30": "Orders (30 days)",
+  "vendorReviewPending": "Your shop is in the approval queue. You can prepare listings, but nothing goes live until an admin verifies the licence.",
+  "vendorPhotoLink": "Photo link",
+  "vendorPhotoHint": "https://… (optional)",
+  "vendorPhotoSoon": "Upload from the camera arrives with the backend; a link previews now.",
+  "vendorPhotoRemove": "Remove photo",
+  "expertHome": "Home",
+  "expertConsoleEyebrow": "Expert studio",
+  "expertConsoleSubtitle": "Your writing, answers and consultations build your reputation.",
+  "expertFeed": "Feed",
+  "expertQuestions": "Questions",
+  "expertConsultations": "Consultations",
+  "expertStudio": "Studio",
+  "expertStudioSubtitle": "Reviews, Krishi Barta and the knowledge base.",
+  "expertQuestionsSubtitle": "Farmers waiting for a person, not an article.",
+  "expertConsultationsSubtitle": "Plans, bookings and your expert network.",
+  "expertReviewsSubtitle": "Low-confidence diagnoses routed to you.",
+  "expertNewsSubtitle": "Review, edit and publish Krishi Barta.",
+  "expertKnowledgeSubtitle": "The verified protocol behind every answer.",
+  "expertWrite": "Write an article",
+  "expertArticleTitle": "Title",
+  "expertArticleSummary": "One-line summary",
+  "expertArticleBody": "Full article",
+  "expertArticleCrop": "Crop",
+  "expertArticlePublished": "Article published to the farmer feed",
+  "expertMine": "Yours",
+  "expertAllArticles": "All",
+  "expertMyArticles": "My articles",
+  "expertSaved": "Saved",
+  "expertNoArticles": "No articles here yet",
+  "expertNoArticlesBody": "Write the first one — farmers see it in Krishi Barta.",
+  "expertLike": "Like",
+  "expertUnlike": "Remove like",
+  "expertSave": "Save",
+  "expertUnsave": "Remove from saved",
+  "expertRateArticle": "Rate this article",
+  "expertRateStars": "{stars} star",
+  "@expertRateStars": {
+    "placeholders": {
+      "stars": {
+        "type": "int"
+      }
+    }
+  },
+  "expertRatingThanks": "Thanks — your rating was recorded.",
+  "expertCommentsCount": "Comments ({count})",
+  "@expertCommentsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertNoComments": "No comments yet. Start the conversation.",
+  "expertAddComment": "Write a comment",
+  "expertViewsCount": "{count} views",
+  "@expertViewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertReadArticle": "Article",
+  "expertPendingQuestions": "{count} farmers are waiting for you",
+  "@expertPendingQuestions": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertAnswerNow": "Answer now",
+  "expertOpenTab": "Open ({count})",
+  "@expertOpenTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expertAnsweredTab": "Answered ({count})",
+  "@expertAnsweredTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expertNoQuestions": "No open questions",
+  "expertNoQuestionsBody": "New farmer requests land here. Subscribers get priority.",
+  "expertAnswer": "Write an answer",
+  "expertAnsweredNow": "Answer sent to the farmer",
+  "expertReplyHint": "Answer in Bangla, with the next step they should take…",
+  "expertModeMessage": "Message",
+  "expertModeCall": "Call",
+  "expertModeVideo": "Video",
+  "expertEditorialTools": "Editorial tools",
+  "expertReviewQueue": "Review queue",
+  "expertReviewQueueBody": "Low-confidence diagnoses",
+  "expertNewsPipeline": "Krishi Barta pipeline",
+  "expertNewsPipelineBody": "Drafts, publishing and rejections",
+  "expertKnowledgeBase": "Knowledge base",
+  "expertKnowledgeBody": "Protocols behind every diagnosis",
+  "expertInbox": "Your inbox",
+  "expertTotalViews": "Total reads",
+  "expertEarnings": "Earnings",
+  "expertSubscribers": "Subscribers",
+  "expertSubscribersCount": "{count} subscribers",
+  "@expertSubscribersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertFollowers": "Followers",
+  "expertFollowersCount": "{count} followers",
+  "@expertFollowersCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "expertRating": "Rating",
+  "expertResponseTime": "Reply time",
+  "expertMinutesShort": "{value} min",
+  "@expertMinutesShort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "expertMinutes": "{value} min",
+  "@expertMinutes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "expertPlans": "Plans",
+  "expertCalls": "Calls",
+  "expertPerPeriod": "per {period}",
+  "@expertPerPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "expertPlanActive": "Live",
+  "expertPlanPaused": "Paused",
+  "expertJoinCall": "Join call",
+  "expertNoCalls": "No calls booked",
+  "expertNoCallsBody": "Farmers can book a call from your profile.",
+  "expertNetwork": "Expert network",
+  "expertConnect": "Connect",
+  "expertConnected": "Connected",
+  "expertConnectNow": "Connect now",
+  "adminOverview": "Overview",
+  "adminConsoleEyebrow": "Platform control",
+  "adminConsoleSubtitle": "Approvals, people, the market and the system — from one place.",
+  "adminApprovals": "Approvals",
+  "adminApprovalBody": "Every application, with the 24-hour promise visible.",
+  "adminSlaTitle": "Review within 24 hours",
+  "adminSlaBody": "Vendors and experts cannot trade until you approve them. The queue is oldest-first.",
+  "adminVendorsTab": "Vendors",
+  "adminVendorApplications": "Vendor applications",
+  "adminAccountApplications": "Account applications",
+  "adminAccountApplication": "Account application",
+  "adminVendorApplication": "Vendor application",
+  "adminApprove": "Approve",
+  "adminPendingTotal": "{count} applications in the queue",
+  "@adminPendingTotal": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminApprovalFooter": "Approving activates the account immediately. Rejections keep the reason for the applicant.",
+  "adminApprovedNow": "Approved — the account is live",
+  "adminRejectedNow": "Application rejected",
+  "adminNoApprovals": "Nothing waiting",
+  "adminNoApprovalsBody": "New applications will appear here.",
+  "adminApprovalsUnavailable": "Pending approvals could not be loaded",
+  "adminOpenApprovals": "Open the approval queue",
+  "adminApprovalQueue": "Approval queue",
+  "adminPendingApprovalsCount": "{count} applications need a decision",
+  "@adminPendingApprovalsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewWithin24h": "24h SLA",
+  "adminAllClear": "Nothing is waiting on you",
+  "adminGmv": "Gross sales (30 days)",
+  "adminLast30Days": "30 days",
+  "adminCommissionEarned": "Commission earned",
+  "adminActiveUsers": "Active users",
+  "adminNewUsers": "New users (7 days)",
+  "adminPlatformHealth": "Platform pace",
+  "adminNeedsAttention": "Needs attention",
+  "adminAllSystemsOk": "All systems healthy",
+  "adminAllSystemsOkBody": "Every active news source completed its last run.",
+  "adminSourceIssues": "{count} news sources are failing",
+  "@adminSourceIssues": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSourceIssuesBody": "The collector keeps retrying; open the source console for the error.",
+  "adminManageSources": "Manage sources",
+  "adminRecentActivity": "Recent activity",
+  "adminMonitor": "Monitor",
+  "adminMonitorSubtitle": "Orders, catalogue and published content — read-only unless noted.",
+  "adminOrders": "Orders",
+  "adminCatalog": "Catalogue",
+  "adminContent": "Content",
+  "adminReadOnly": "Monitoring only",
+  "adminReadOnlyBody": "Admins can see every order but cannot place one — buying is farmer-only by design.",
+  "adminCatalogNote": "Every listing, every shop",
+  "adminCatalogNoteBody": "Hide a listing that breaks the rules; the shop keeps the record.",
+  "adminContentNote": "Published content",
+  "adminContentNoteBody": "Take down a story that is wrong or unsafe. The author is notified by the server.",
+  "adminItems": "Items",
+  "adminHidden": "Hidden",
+  "adminHideProduct": "Hide",
+  "adminShowProduct": "Show",
+  "adminProductUpdated": "Listing updated",
+  "adminTakeDown": "Take down",
+  "adminRestore": "Restore",
+  "adminContentUpdated": "Content updated",
+  "adminSystem": "System",
+  "adminSystemSubtitle": "Platform switches, sources, logs and your account.",
+  "adminSettings": "Platform settings",
+  "adminCommissionPercent": "Commission (%)",
+  "adminCommissionHint": "Charged on each completed order, 0–30%.",
+  "adminCommissionInvalid": "Enter a number from 0 to 30",
+  "adminAutoApproveFarmers": "Auto-approve farmer accounts",
+  "adminAutoApproveFarmersHint": "Farmers skip the queue; vendors and experts never do.",
+  "adminMaintenance": "Maintenance mode",
+  "adminMaintenanceHint": "Shows the maintenance notice to every role except admin.",
+  "adminSupportPhone": "Support phone",
+  "adminBroadcast": "Broadcast banner",
+  "adminBroadcastHint": "Shown on the farmer home until you clear it.",
+  "adminSaveSettings": "Save settings",
+  "adminSettingsSaved": "Settings saved",
+  "adminOperations": "Operations",
+  "adminSourcesSubtitle": "What the collector reads, and how often.",
+  "adminLogsSubtitle": "Every system, collection and audit event.",
+  "adminVendorApprovals": "Vendor approvals",
+  "adminVendorApprovalsSubtitle": "Licences, suspensions and reinstatements.",
+  "adminUsersSubtitle": "Search, filter and act on any account.",
+  "advisoryTitle": "Expert advice",
+  "advisorySubtitle": "Verified guidance written by agricultural experts.",
+  "homeTileAdvisory": "Read advice",
+  "homeTileAdvisoryHint": "From the experts",
+  "articleComments": "Comments",
+  "articleCommentHint": "Write a comment",
+  "articleRate": "Rate this",
+  "articleRated": "Thanks, your rating was saved",
+  "articleReads": "reads",
+  "articleNoComments": "No comments yet.",
+  "askExpert": "Ask an expert",
+  "askExpertHint": "Describe your crop problem in detail",
+  "askExpertSent": "Your question was sent. You will be notified when an expert answers.",
+  "askExpertUrgent": "Urgent",
+  "actionLike": "Like",
+  "actionUnlike": "Remove like"
 }

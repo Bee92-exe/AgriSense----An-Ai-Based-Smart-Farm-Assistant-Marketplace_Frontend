@@ -466,6 +466,15 @@ class _UserCardState extends ConsumerState<_UserCard> {
                   expand: false,
                   onPressed: _suspend,
                 ),
+              // The reset flow fails closed, so this is the only way to recover
+              // an account that cannot sign in.
+              AppButton(
+                label: l.adminResetPassword,
+                tone: AppButtonTone.secondary,
+                expand: false,
+                isLoading: _busy,
+                onPressed: _resetPassword,
+              ),
             ],
           ),
         ],
@@ -483,6 +492,52 @@ class _UserCardState extends ConsumerState<_UserCard> {
     );
     if (reason == null) return;
     await _set(AccountStatus.suspended, reason: reason);
+  }
+
+  /// Reissues a temporary password and shows it exactly once.
+  ///
+  /// Deliberately not stored anywhere in the app: the admin reads it to the user
+  /// and it is gone. The server keeps only the hash.
+  Future<void> _resetPassword() async {
+    final l = AppL10n.of(context);
+    setState(() => _busy = true);
+    try {
+      final temporary = await ref
+          .read(adminRepositoryProvider)
+          .resetUserPassword(widget.user.id);
+      if (!mounted) return;
+      setState(() => _busy = false);
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l.adminResetPassword),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SelectableText(temporary, style: context.texts.titleMedium),
+              const SizedBox(height: Space.xs),
+              Text(l.adminResetPasswordBody, style: context.texts.bodySmall),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                MaterialLocalizations.of(dialogContext).closeButtonLabel,
+              ),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        setState(() => _busy = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(staffErrorText(error, l))),
+        );
+      }
+    }
   }
 
   Future<void> _set(AccountStatus status, {String? reason}) async {

@@ -54,6 +54,9 @@ ProviderContainer _container(_FakeRecognizer recognizer) {
     overrides: [
       sharedPreferencesProvider.overrideWithValue(_prefs),
       speechRecognizerProvider.overrideWithValue(recognizer),
+      // Mocks are opt-in: this container has no widget binding, and a real app
+      // must never fall back to demo data just because no binding exists.
+      useMockRepositoriesProvider.overrideWithValue(true),
     ],
   );
   addTearDown(container.dispose);

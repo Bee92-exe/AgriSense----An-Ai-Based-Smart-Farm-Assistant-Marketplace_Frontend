@@ -11,15 +11,6 @@
 /// with two urgent, and an expert review queue.
 library;
 
-/// Districts, used by the weather strip, the profile form and news matching.
-const List<String> kDistricts = [
-  'ঢাকা', 'গাজীপুর', 'নরসিংদী', 'মুন্সীগঞ্জ', 'টাঙ্গাইল', 'কিশোরগঞ্জ',
-  'রংপুর', 'দিনাজপুর', 'বগুড়া', 'রাজশাহী', 'নাটোর', 'পাবনা',
-  'খুলনা', 'যশোর', 'কুষ্টিয়া', 'সাতক্ষীরা', 'বরিশাল', 'পটুয়াখালী',
-  'সিলেট', 'মৌলভীবাজার', 'চট্টগ্রাম', 'কুমিল্লা', 'নোয়াখালী', 'ফেনী',
-  'ময়মনসিংহ', 'জামালপুর', 'শেরপুর', 'নেত্রকোণা',
-];
-
 /// Soil types for the crop recommender (FR-13).
 const List<String> kSoilTypes = [
   'এঁটেল মাটি', 'দোআঁশ মাটি', 'বেলে দোআঁশ', 'পলি মাটি', 'বালি মাটি', 'অম্লীয় মাটি',
@@ -260,6 +251,15 @@ const List<Map<String, dynamic>> kVendorSeed = [
     'rating': null,
     'district': 'নরসিংদী',
   },
+  // The demo vendor account (`01711000002`) owns this shop, so the vendor
+  // shell has stock, orders and ratings that belong to the user signed in.
+  {
+    'id': 'ven-rahim',
+    'shop_name': 'রহিম কৃষি ভাণ্ডার',
+    'verification_status': 'verified',
+    'rating': 4.6,
+    'district': 'গাজীপুর',
+  },
 ];
 
 /// Listings. `vendor.verified` is derived from [kVendorSeed] when the mock
@@ -276,7 +276,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'description': 'ধানের ব্লাস্ট রোগ প্রতিরোধে ব্যবহৃত ছত্রাকনাশক। ১০ গ্রাম প্যাকেট সাপেক্ষে।',
     'active_ingredient': 'Tricyclazole',
     'target_diseases': ['dis-rice-blast'],
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-2',
@@ -292,7 +292,7 @@ const List<Map<String, dynamic>> kProductSeed = [
       'dis-potato-early-blight',
       'dis-tomato-late-blight',
     ],
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-3',
@@ -335,7 +335,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'price': 1200,
     'stock': 8,
     'description': 'রোপণের জন্য প্রত্যয়িত বীজ আলু, ৫০ কেজি বস্তা।',
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-7',
@@ -355,7 +355,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'price': 850,
     'stock': 15,
     'description': 'পটাশ সার, ৫০ কেজি বস্তা। গাছ শক্ত করতে সহায়ক।',
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-9',
@@ -438,7 +438,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'price': 980,
     'stock': 0,
     'description': 'সালফেট অব পটাশ সার, ৫০ কেজি বস্তা।',
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-17',
@@ -460,7 +460,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'description': 'ছত্রাকজনিত রোগে ব্যবহৃত, ১০০ মিলি বোতল।',
     'active_ingredient': 'Hexaconazole',
     'target_diseases': ['dis-rice-blast', 'dis-rice-brown-spot'],
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   {
     'id': 'prd-19',
@@ -482,7 +482,7 @@ const List<Map<String, dynamic>> kProductSeed = [
     'price': 180,
     'stock': 42,
     'description': 'স্প্রে মেশিনের নোজেল সেট, চারটি সাইজ।',
-    'vendor_id': 'ven-bhumiputra',
+    'vendor_id': 'ven-rahim',
   },
   // Belongs to the unverified vendor. The mock repository must never return it.
   {
@@ -596,6 +596,8 @@ List<Map<String, dynamic>> diagnosisSeed(String nowIso) {
 List<Map<String, dynamic>> orderSeed(String nowIso) {
   final now = DateTime.parse(nowIso);
   String ago(int days) => now.subtract(Duration(days: days)).toIso8601String();
+  String hoursAgo(int hours) =>
+      now.subtract(Duration(hours: hours)).toIso8601String();
 
   Map<String, dynamic> v(int i) => {
         'id': kVendorSeed[i]['id'],
@@ -616,11 +618,11 @@ List<Map<String, dynamic>> orderSeed(String nowIso) {
       'items': [
         {'product_id': 'prd-1', 'name': 'ট্রাইসাইক্লাজল ৭৫% ডব্লিউপি', 'quantity': 2, 'unit_price': 480, 'subtotal': 960},
       ],
-      'vendor': v(0),
+      'vendor': v(3),
       'history': [
-        {'status': 'pending', 'at': ago(1)},
+        {'status': 'pending', 'at': hoursAgo(2)},
       ],
-      'created_at': ago(1),
+      'created_at': hoursAgo(2),
     },
     {
       'id': 'ord-2',
@@ -633,7 +635,7 @@ List<Map<String, dynamic>> orderSeed(String nowIso) {
       'items': [
         {'product_id': 'prd-2', 'name': 'ম্যানকোজেব ৮০% ডব্লিউপি', 'quantity': 1, 'unit_price': 320, 'subtotal': 320},
       ],
-      'vendor': v(0),
+      'vendor': v(3),
       'history': [
         {'status': 'pending', 'at': ago(3)},
         {'status': 'confirmed', 'at': ago(3)},
@@ -647,10 +649,10 @@ List<Map<String, dynamic>> orderSeed(String nowIso) {
       'display_status': 'shipped',
       'payment_mode': 'cod',
       'placed_via': 'touch',
-      'total_amount': 2200,
+      'total_amount': 2410,
       'items': [
         {'product_id': 'prd-15', 'name': 'হ্যান্ড স্প্রেয়ার ১৬ লিটার', 'quantity': 1, 'unit_price': 1650, 'subtotal': 1650},
-        {'product_id': 'prd-20', 'name': 'স্প্রেয়ার নোজেল সেট', 'quantity': 1, 'unit_price': 180, 'subtotal': 180},
+        {'product_id': 'prd-17', 'name': 'জিংক সালফেট', 'quantity': 1, 'unit_price': 760, 'subtotal': 760},
       ],
       'vendor': v(1),
       'history': [
@@ -691,7 +693,7 @@ List<Map<String, dynamic>> orderSeed(String nowIso) {
       'items': [
         {'product_id': 'prd-6', 'name': 'আলুর বীজ (ডায়মন্ড জাত)', 'quantity': 1, 'unit_price': 1200, 'subtotal': 1200},
       ],
-      'vendor': v(0),
+      'vendor': v(3),
       'history': [
         {'status': 'pending', 'at': ago(20)},
         {'status': 'rejected', 'at': ago(19)},
@@ -716,8 +718,128 @@ List<Map<String, dynamic>> orderSeed(String nowIso) {
       ],
       'created_at': ago(26),
     },
+    {
+      'id': 'ord-7',
+      'order_no': 'AS-2026-000151',
+      'status': 'shipped',
+      'display_status': 'shipped',
+      'payment_mode': 'cod',
+      'placed_via': 'touch',
+      'total_amount': 720,
+      'items': [
+        {'product_id': 'prd-18', 'name': 'হেক্সাকোনাজল ৫% এসসি', 'quantity': 1, 'unit_price': 540, 'subtotal': 540},
+        {'product_id': 'prd-20', 'name': 'স্প্রেয়ার নোজেল সেট', 'quantity': 1, 'unit_price': 180, 'subtotal': 180},
+      ],
+      'vendor': v(3),
+      'history': [
+        {'status': 'pending', 'at': ago(4)},
+        {'status': 'confirmed', 'at': ago(4)},
+        {'status': 'shipped', 'at': ago(2)},
+      ],
+      'created_at': ago(4),
+    },
+    {
+      'id': 'ord-8',
+      'order_no': 'AS-2026-000142',
+      'status': 'delivered',
+      'display_status': 'delivered',
+      'payment_mode': 'cod',
+      'placed_via': 'voice',
+      'total_amount': 850,
+      'items': [
+        {'product_id': 'prd-8', 'name': 'মিউরেট অব পটাশ (এমওপি)', 'quantity': 1, 'unit_price': 850, 'subtotal': 850},
+      ],
+      'vendor': v(3),
+      'history': [
+        {'status': 'pending', 'at': ago(9)},
+        {'status': 'confirmed', 'at': ago(9)},
+        {'status': 'shipped', 'at': ago(7)},
+        {'status': 'delivered', 'at': ago(5)},
+      ],
+      'created_at': ago(9),
+    },
   ];
 }
+
+/// Buyer details for each seeded order.
+///
+/// Only the vendor involved in an order may see these (API_SPEC §6/§7); the
+/// vendor screens read them from here, the farmer's own order screens never do.
+const Map<String, Map<String, dynamic>> kOrderBuyerSeed = {
+  'ord-1': {
+    'name': 'সেলিনা বেগম',
+    'mobile': '01712000451',
+    'district': 'টাঙ্গাইল',
+    'note': 'বিকেল ৪টার পরে ফোন করবেন।',
+  },
+  'ord-2': {
+    'name': 'মোঃ হাসান আলী',
+    'mobile': '01715000933',
+    'district': 'কিশোরগঞ্জ',
+    'note': '',
+  },
+  'ord-3': {
+    'name': 'আবু বকর সিদ্দিক',
+    'mobile': '01819000712',
+    'district': 'চট্টগ্রাম',
+    'note': 'গ্রামের বাজার, মসজিদের পাশে।',
+  },
+  'ord-4': {
+    'name': 'রুবেল হোসেন',
+    'mobile': '01913000488',
+    'district': 'ময়মনসিংহ',
+    'note': '',
+  },
+  'ord-5': {
+    'name': 'শাহানারা খাতুন',
+    'mobile': '01614000291',
+    'district': 'রংপুর',
+    'note': 'বীজের প্যাকেট ফাটা যেন না হয়।',
+  },
+  'ord-6': {
+    'name': 'জাহিদুল ইসলাম',
+    'mobile': '01717000654',
+    'district': 'বরিশাল',
+    'note': '',
+  },
+  'ord-7': {
+    'name': 'নাসরিন আক্তার',
+    'mobile': '01816000540',
+    'district': 'গাজীপুর',
+    'note': 'বাড়ির পাশে দোকানে রেখে যাবেন।',
+  },
+  'ord-8': {
+    'name': 'আব্দুল করিম',
+    'mobile': '01711000001',
+    'district': 'ঢাকা',
+    'note': '',
+  },
+};
+
+/// Ratings a vendor sees read-only (SCREENS_AND_FLOWS §2).
+const List<Map<String, dynamic>> kVendorRatingSeed = [
+  {
+    'rating': 5,
+    'comment': 'ওষুধ ঠিক সময়ে পেয়েছি, দামও ঠিক ছিল।',
+    'farmer_name': 'সেলিনা বেগম',
+    'vendor_id': 'ven-rahim',
+    'days_ago': 6,
+  },
+  {
+    'rating': 4,
+    'comment': 'পণ্য ভালো, তবে ডেলিভারিতে এক দিন দেরি হয়েছে।',
+    'farmer_name': 'মোঃ হাসান আলী',
+    'vendor_id': 'ven-rahim',
+    'days_ago': 12,
+  },
+  {
+    'rating': 5,
+    'comment': 'বীজের অঙ্কুর ভালো হয়েছে।',
+    'farmer_name': 'আব্দুল করিম',
+    'vendor_id': 'ven-rahim',
+    'days_ago': 21,
+  },
+];
 
 /// Krishi Barta. Eight items, two urgent, across all four categories.
 List<Map<String, dynamic>> newsSeed(String nowIso) {

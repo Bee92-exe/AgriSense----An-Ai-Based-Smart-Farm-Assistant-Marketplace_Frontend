@@ -36,22 +36,39 @@ class OpsPill extends StatelessWidget {
     return Semantics(
       label: label,
       excludeSemantics: true,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 4),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: Radii.chipAll,
-          border: Border.all(color: foreground, width: p.borderWidth),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.texts.labelSmall?.copyWith(
-            color: foreground,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // A Row gives a non-flexible child unbounded width, so a long Bangla
+          // status would silently overflow the card. When the parent does not
+          // bound the pill, cap it to a share of the screen and ellipsize.
+          final maxWidth = constraints.hasBoundedWidth
+              ? constraints.maxWidth
+              : MediaQuery.sizeOf(context).width * 0.45;
+
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Space.xs,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: background,
+                borderRadius: Radii.chipAll,
+                border: Border.all(color: foreground, width: p.borderWidth),
+              ),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.texts.labelSmall?.copyWith(
+                  color: foreground,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -74,6 +74,9 @@ class AdminHomeScreen extends ConsumerWidget {
       return const Scaffold(body: LoadingState(rows: 3));
     }
 
+    // `.value` is null while loading *and* after a failure, so the count alone
+    // cannot tell "nothing is waiting" from "the queue did not load".
+    final approvalsFailed = vendors.hasError || users.hasError;
     final pendingCount = (vendors.value?.length ?? 0) +
         (users.value?.length ?? 0);
     final failedSources = sources.value
@@ -107,29 +110,31 @@ class AdminHomeScreen extends ConsumerWidget {
         footer: Builder(
           builder: (context) {
             final ink = p.onPrimary;
-            return Row(
+            // A Wrap, not a Row: the count and the 24-hour promise are both
+            // long Bangla strings and cannot share a line at 320dp.
+            return Wrap(
+              spacing: 6,
+              runSpacing: 2,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Icon(
-                  pendingCount == 0
-                      ? Icons.check_circle_rounded
-                      : Icons.pending_actions_rounded,
+                  approvalsFailed
+                      ? Icons.error_outline_rounded
+                      : pendingCount == 0
+                          ? Icons.check_circle_rounded
+                          : Icons.pending_actions_rounded,
                   size: 18,
                   color: ink,
                 ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    pendingCount == 0
-                        ? l.adminAllClear
-                        : l.adminPendingApprovalsCount(
-                            f.number(pendingCount),
-                          ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.texts.labelLarge?.copyWith(
-                      color: ink,
-                      fontWeight: FontWeight.w700,
-                    ),
+                Text(
+                  approvalsFailed
+                      ? l.adminApprovalsUnavailable
+                      : pendingCount == 0
+                          ? l.adminAllClear
+                          : l.adminPendingApprovalsCount(f.number(pendingCount)),
+                  style: context.texts.labelLarge?.copyWith(
+                    color: ink,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
@@ -235,7 +240,16 @@ class AdminHomeScreen extends ConsumerWidget {
                   onAction: () => tab.value = 1,
                 ),
                 const SizedBox(height: Space.xs),
-                if (pendingCount == 0)
+                if (approvalsFailed)
+                  ErrorState(
+                    body: staffErrorText(vendors.error ?? users.error!, l),
+                    onRetry: () {
+                      ref.invalidate(adminVendorsProvider);
+                      ref.invalidate(adminUsersProvider);
+                      ref.invalidate(adminOverviewProvider);
+                    },
+                  )
+                else if (pendingCount == 0)
                   AppCard(
                     child: Text(
                       l.adminNoApprovals,
@@ -373,6 +387,37 @@ class AdminApprovalsScreen extends ConsumerStatefulWidget {
 class _AdminApprovalsScreenState extends ConsumerState<AdminApprovalsScreen> {
   int _filter = 0;
   String? _busyId;
+  ValueNotifier<int>? _tabs;
+
+  /// The desk sits inside an `IndexedStack`, so it is built once and kept
+  /// alive for the whole session. Without this the queue keeps whatever it
+  /// resolved when the app started, and an application submitted afterwards
+  /// never reaches the screen — the admin sees a permanently empty list.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final tabs = ref.read(adminTabProvider);
+    if (!identical(tabs, _tabs)) {
+      _tabs?.removeListener(_onTabChanged);
+      _tabs = tabs..addListener(_onTabChanged);
+    }
+  }
+
+  void _onTabChanged() {
+    if (_tabs?.value == 1) _reloadQueue();
+  }
+
+  void _reloadQueue() {
+    ref.invalidate(adminVendorsProvider);
+    ref.invalidate(adminUsersProvider);
+    ref.invalidate(adminOverviewProvider);
+  }
+
+  @override
+  void dispose() {
+    _tabs?.removeListener(_onTabChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -383,6 +428,7 @@ class _AdminApprovalsScreenState extends ConsumerState<AdminApprovalsScreen> {
     final users = ref.watch(adminUsersProvider(
       (query: '', role: null, status: AccountStatus.pending),
     ));
+    final failure = vendors.error ?? users.error;
 
     final pendingVendors = _filter == 0 || _filter == 1
         ? vendors.value ?? const <AdminVendor>[]
@@ -435,7 +481,12 @@ class _AdminApprovalsScreenState extends ConsumerState<AdminApprovalsScreen> {
             onChanged: (i) => setState(() => _filter = i),
           ),
           const SizedBox(height: Space.md),
-          if (loading)
+          if (failure != null)
+            ErrorState(
+              body: staffErrorText(failure, l),
+              onRetry: _reloadQueue,
+            )
+          else if (loading)
             const LoadingState(rows: 4)
           else if (total == 0)
             EmptyState(

@@ -168,7 +168,10 @@ enum NewsCategory {
   disease('disease'),
   pest('pest'),
   virus('virus'),
-  nutrientDeficiency('nutrient_deficiency');
+  nutrientDeficiency('nutrient_deficiency'),
+  weather('weather'),
+  market('market'),
+  advisory('advisory');
 
   const NewsCategory(this.wire);
 
@@ -184,6 +187,9 @@ enum NewsCategory {
         NewsCategory.pest => Icons.bug_report_rounded,
         NewsCategory.virus => Icons.science_rounded,
         NewsCategory.nutrientDeficiency => Icons.eco_rounded,
+        NewsCategory.weather => Icons.cloud_rounded,
+        NewsCategory.market => Icons.storefront_rounded,
+        NewsCategory.advisory => Icons.campaign_rounded,
       };
 }
 

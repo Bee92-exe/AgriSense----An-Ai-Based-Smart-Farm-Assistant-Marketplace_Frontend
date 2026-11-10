@@ -2,10 +2,9 @@ import 'package:flutter/foundation.dart';
 
 /// Models for the vendor CRM, the expert studio and the admin control room.
 ///
-/// These screens are UI-first: the backend contract for them has not been
-/// written yet, so nothing here parses JSON. When `API_SPEC.md` grows the
-/// endpoints, the wire shape is added to the server-owned models instead of
-/// being guessed here.
+/// Every class here that the server returns carries a `fromJson`. The wire keys
+/// are snake_case because the Express serializers emit snake_case, matching the
+/// rest of the API.
 
 /// One day in a small trend chart.
 @immutable
@@ -14,6 +13,11 @@ class TrendPoint {
 
   final DateTime day;
   final double value;
+
+  factory TrendPoint.fromJson(Map<String, dynamic> json) => TrendPoint(
+        day: DateTime.tryParse(json['day'] as String? ?? '') ?? DateTime.now(),
+        value: (json['value'] as num?)?.toDouble() ?? 0,
+      );
 }
 
 /// A buyer the vendor has sold to at least once, with the notes the shop keeps
@@ -41,8 +45,7 @@ class VendorCustomer {
   final int totalSpent;
   final DateTime lastOrderAt;
 
-  /// `new | repeat | loyal | atRisk`. Kept as a wire-style string so the mock
-  /// and a future server field cannot drift.
+  /// `new | repeat | loyal | atRisk`, derived by the server from order history.
   final String segment;
 
   final String? note;
@@ -60,6 +63,21 @@ class VendorCustomer {
         note: note ?? this.note,
         followUp: followUp ?? this.followUp,
       );
+
+  factory VendorCustomer.fromJson(Map<String, dynamic> json) => VendorCustomer(
+        id: json['id'] as String? ?? '',
+        name: json['name'] as String? ?? '',
+        mobile: json['mobile'] as String? ?? '',
+        district: json['district'] as String? ?? '',
+        orders: (json['orders'] as num?)?.toInt() ?? 0,
+        totalSpent: (json['total_spent'] as num?)?.toInt() ?? 0,
+        lastOrderAt:
+            DateTime.tryParse(json['last_order_at'] as String? ?? '') ??
+                DateTime.now(),
+        segment: json['segment'] as String? ?? 'new',
+        note: json['note'] as String?,
+        followUp: json['follow_up'] as bool? ?? false,
+      );
 }
 
 /// One line in the vendor's payout history.
@@ -76,6 +94,13 @@ class VendorPayout {
   final int amount;
   final DateTime at;
   final String status;
+
+  factory VendorPayout.fromJson(Map<String, dynamic> json) => VendorPayout(
+        id: json['id'] as String? ?? '',
+        amount: (json['amount'] as num?)?.toInt() ?? 0,
+        at: DateTime.tryParse(json['at'] as String? ?? '') ?? DateTime.now(),
+        status: json['status'] as String? ?? 'pending',
+      );
 }
 
 /// The vendor's money view: what sold, what it earned, what the platform keeps
@@ -93,6 +118,7 @@ class VendorBusiness {
     required this.payouts,
     required this.topProducts,
     required this.customers,
+    this.commissionPercent = 0,
   });
 
   final List<TrendPoint> week;
@@ -106,11 +132,43 @@ class VendorBusiness {
   final List<({String name, int units, int revenue})> topProducts;
   final List<VendorCustomer> customers;
 
-  int get repeatCustomers =>
-      customers.where((c) => c.orders > 1).length;
+  /// The rate the server actually applied, so the screen can say "10%" rather
+  /// than hardcoding a number that could drift from configuration.
+  final int commissionPercent;
+
+  int get repeatCustomers => customers.where((c) => c.orders > 1).length;
 
   double get conversion =>
       storeVisits == 0 ? 0 : (orders30 / storeVisits) * 100;
+
+  factory VendorBusiness.fromJson(Map<String, dynamic> json) => VendorBusiness(
+        week: ((json['week'] as List<dynamic>?) ?? const [])
+            .map((e) => TrendPoint.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        revenue30: (json['revenue30'] as num?)?.toInt() ?? 0,
+        profit30: (json['profit30'] as num?)?.toInt() ?? 0,
+        commission30: (json['commission30'] as num?)?.toInt() ?? 0,
+        commissionPercent: (json['commission_percent'] as num?)?.toInt() ?? 0,
+        pendingPayout: (json['pending_payout'] as num?)?.toInt() ?? 0,
+        storeVisits: (json['store_visits'] as num?)?.toInt() ?? 0,
+        orders30: (json['orders30'] as num?)?.toInt() ?? 0,
+        payouts: ((json['payouts'] as List<dynamic>?) ?? const [])
+            .map((e) => VendorPayout.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        topProducts: ((json['top_products'] as List<dynamic>?) ?? const [])
+            .map((e) {
+              final map = e as Map<String, dynamic>;
+              return (
+                name: map['name'] as String? ?? '',
+                units: (map['units'] as num?)?.toInt() ?? 0,
+                revenue: (map['revenue'] as num?)?.toInt() ?? 0,
+              );
+            })
+            .toList(),
+        customers: ((json['customers'] as List<dynamic>?) ?? const [])
+            .map((e) => VendorCustomer.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
 }
 
 /// One comment under an expert article.
@@ -131,6 +189,15 @@ class ArticleComment {
   final DateTime at;
   final bool isExpert;
   final int likes;
+
+  factory ArticleComment.fromJson(Map<String, dynamic> json) => ArticleComment(
+        id: json['id'] as String? ?? '',
+        authorName: json['author_name'] as String? ?? '',
+        body: json['body'] as String? ?? '',
+        at: DateTime.tryParse(json['at'] as String? ?? '') ?? DateTime.now(),
+        isExpert: json['is_expert'] as bool? ?? false,
+        likes: (json['likes'] as num?)?.toInt() ?? 0,
+      );
 }
 
 /// A published expert article — the social half of the expert panel.
@@ -205,11 +272,34 @@ class ExpertArticle {
         saved: saved ?? this.saved,
         mine: mine,
       );
+
+  factory ExpertArticle.fromJson(Map<String, dynamic> json) => ExpertArticle(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        summary: json['summary'] as String? ?? '',
+        body: json['body'] as String? ?? '',
+        authorName: json['author_name'] as String? ?? '',
+        authorTitle: json['author_title'] as String? ?? '',
+        crop: json['crop'] as String? ?? '',
+        publishedAt:
+            DateTime.tryParse(json['published_at'] as String? ?? '') ??
+                DateTime.now(),
+        likes: (json['likes'] as num?)?.toInt() ?? 0,
+        views: (json['views'] as num?)?.toInt() ?? 0,
+        rating: (json['rating'] as num?)?.toDouble() ?? 0,
+        ratingCount: (json['rating_count'] as num?)?.toInt() ?? 0,
+        comments: ((json['comments'] as List<dynamic>?) ?? const [])
+            .map((e) => ArticleComment.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        coverTone: (json['cover_tone'] as num?)?.toInt() ?? 0,
+        liked: json['liked'] as bool? ?? false,
+        saved: json['saved'] as bool? ?? false,
+        mine: json['mine'] as bool? ?? false,
+      );
 }
 
 /// A farmer's request for a person, not an article. `message`, `call` and
-/// `video` are the three ways the expert can answer (calling itself is wired
-/// when the backend lands).
+/// `video` are the three ways the expert can answer.
 @immutable
 class ExpertQuestion {
   const ExpertQuestion({
@@ -248,6 +338,21 @@ class ExpertQuestion {
         answered: answered ?? this.answered,
         reply: reply ?? this.reply,
       );
+
+  factory ExpertQuestion.fromJson(Map<String, dynamic> json) => ExpertQuestion(
+        id: json['id'] as String? ?? '',
+        farmerName: json['farmer_name'] as String? ?? '',
+        farmerDistrict: json['farmer_district'] as String? ?? '',
+        crop: json['crop'] as String? ?? '',
+        question: json['question'] as String? ?? '',
+        mode: json['mode'] as String? ?? 'message',
+        createdAt:
+            DateTime.tryParse(json['created_at'] as String? ?? '') ??
+                DateTime.now(),
+        urgent: json['urgent'] as bool? ?? false,
+        answered: json['answered'] as bool? ?? false,
+        reply: json['reply'] as String?,
+      );
 }
 
 /// A consultation subscription the expert sells.
@@ -280,6 +385,19 @@ class ConsultationPlan {
         perks: perks,
         active: active ?? this.active,
       );
+
+  factory ConsultationPlan.fromJson(Map<String, dynamic> json) =>
+      ConsultationPlan(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        period: json['period'] as String? ?? 'monthly',
+        price: (json['price'] as num?)?.toInt() ?? 0,
+        subscribers: (json['subscribers'] as num?)?.toInt() ?? 0,
+        perks: ((json['perks'] as List<dynamic>?) ?? const [])
+            .map((e) => e.toString())
+            .toList(),
+        active: json['active'] as bool? ?? true,
+      );
 }
 
 /// A booked call or visit.
@@ -304,6 +422,17 @@ class ConsultationBooking {
 
   /// `upcoming | done | cancelled`
   final String status;
+
+  factory ConsultationBooking.fromJson(Map<String, dynamic> json) =>
+      ConsultationBooking(
+        id: json['id'] as String? ?? '',
+        farmerName: json['farmer_name'] as String? ?? '',
+        topic: json['topic'] as String? ?? '',
+        mode: json['mode'] as String? ?? 'call',
+        at: DateTime.tryParse(json['at'] as String? ?? '') ?? DateTime.now(),
+        minutes: (json['minutes'] as num?)?.toInt() ?? 30,
+        status: json['status'] as String? ?? 'upcoming',
+      );
 }
 
 /// Another expert the signed-in expert can connect with.
@@ -335,6 +464,16 @@ class ExpertPeer {
         rating: rating,
         followers: followers,
         connected: connected ?? this.connected,
+      );
+
+  factory ExpertPeer.fromJson(Map<String, dynamic> json) => ExpertPeer(
+        id: json['id'] as String? ?? '',
+        name: json['name'] as String? ?? '',
+        specialization: json['specialization'] as String? ?? '',
+        district: json['district'] as String? ?? '',
+        rating: (json['rating'] as num?)?.toDouble() ?? 0,
+        followers: (json['followers'] as num?)?.toInt() ?? 0,
+        connected: json['connected'] as bool? ?? false,
       );
 }
 
@@ -370,6 +509,29 @@ class ExpertDesk {
 
   List<ConsultationBooking> get upcoming =>
       bookings.where((b) => b.status == 'upcoming').toList(growable: false);
+
+  factory ExpertDesk.fromJson(Map<String, dynamic> json) => ExpertDesk(
+        articles: ((json['articles'] as List<dynamic>?) ?? const [])
+            .map((e) => ExpertArticle.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        questions: ((json['questions'] as List<dynamic>?) ?? const [])
+            .map((e) => ExpertQuestion.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        plans: ((json['plans'] as List<dynamic>?) ?? const [])
+            .map((e) => ConsultationPlan.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        bookings: ((json['bookings'] as List<dynamic>?) ?? const [])
+            .map((e) => ConsultationBooking.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        peers: ((json['peers'] as List<dynamic>?) ?? const [])
+            .map((e) => ExpertPeer.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        rating: (json['rating'] as num?)?.toDouble() ?? 0,
+        followers: (json['followers'] as num?)?.toInt() ?? 0,
+        subscribers: (json['subscribers'] as num?)?.toInt() ?? 0,
+        earnings: (json['earnings'] as num?)?.toInt() ?? 0,
+        responseMinutes: (json['response_minutes'] as num?)?.toInt() ?? 0,
+      );
 }
 
 /// One point on the admin's platform-health chart.

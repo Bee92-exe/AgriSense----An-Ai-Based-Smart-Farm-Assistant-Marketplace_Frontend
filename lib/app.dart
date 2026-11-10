@@ -5,6 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/providers/settings_provider.dart';
 import 'core/router/app_router.dart';
+import 'data/providers.dart';
 import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
@@ -15,11 +16,32 @@ import 'l10n/app_localizations.dart';
 /// therefore every string and digit in the app, and the high-contrast flag swaps
 /// the entire palette. Both are read from one provider so a change repaints the
 /// app without a restart.
-class AgriSenseApp extends ConsumerWidget {
+class AgriSenseApp extends ConsumerStatefulWidget {
   const AgriSenseApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AgriSenseApp> createState() => _AgriSenseAppState();
+}
+
+class _AgriSenseAppState extends ConsumerState<AgriSenseApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Photos captured without a connection are sent as soon as the app opens
+    // with one. Failures are swallowed here: the farmer did not ask for this
+    // upload, so it must never surface as an error on the home screen.
+    Future<void>.microtask(() async {
+      try {
+        await ref.read(diagnosisQueueProvider).flush();
+      } catch (_) {
+        // Still offline, or storage unavailable. The queue is durable; the next
+        // launch tries again.
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(routerProvider);
 

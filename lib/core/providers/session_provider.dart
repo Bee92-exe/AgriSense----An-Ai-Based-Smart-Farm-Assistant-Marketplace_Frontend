@@ -34,15 +34,17 @@ class SessionNotifier extends AsyncNotifier<AppUser?> {
     return result.value;
   }
 
+  Future<void> requestPasswordReset(String mobile) async {
+    await ref.read(authRepositoryProvider).requestPasswordReset(mobile);
+  }
+
   Future<bool> resetPassword({
-    required String mobile,
-    required String otp,
+    required String token,
     required String newPassword,
   }) async {
     try {
       await ref.read(authRepositoryProvider).resetPassword(
-            mobile: mobile,
-            otp: otp,
+            token: token,
             newPassword: newPassword,
           );
       return true;

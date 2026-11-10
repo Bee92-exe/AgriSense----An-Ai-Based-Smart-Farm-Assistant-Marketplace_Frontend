@@ -2,8 +2,15 @@ import 'package:agrisense/core/providers/session_provider.dart';
 import 'package:agrisense/core/providers/settings_provider.dart';
 import 'package:agrisense/core/theme/app_theme.dart';
 import 'package:agrisense/core/widgets/app_card.dart';
+import 'package:agrisense/data/mock/mock_ops_repositories.dart';
 import 'package:agrisense/data/models/enums.dart';
 import 'package:agrisense/data/models/user.dart';
+import 'package:agrisense/core/widgets/states.dart';
+import 'package:agrisense/data/models/ops.dart';
+import 'package:agrisense/data/providers.dart';
+import 'package:agrisense/data/repositories/admin_repository.dart';
+import 'package:agrisense/data/repositories/auth_repository.dart';
+import 'package:agrisense/features/admin/admin_home_screen.dart';
 import 'package:agrisense/features/admin/admin_providers.dart';
 import 'package:agrisense/features/admin/admin_screens.dart';
 import 'package:agrisense/features/expert/expert_screens.dart';
@@ -59,6 +66,32 @@ Finder _cardWith(String text) => find.ancestor(
       matching: find.byType(AppCard),
     );
 
+/// Answers every approval request with a failure, so the screen's error path is
+/// exercised instead of whichever list the mock happens to hold.
+class _FailingAdminRepository implements AdminRepository {
+  const _FailingAdminRepository();
+
+  static const _offline = ApiException(
+    code: 'network_error',
+    messageKey: 'stateErrorBody',
+  );
+
+  @override
+  Future<List<AdminVendor>> vendors({String? status}) async => throw _offline;
+
+  @override
+  Future<List<PlatformUser>> users({
+    String query = '',
+    Role? role,
+    AccountStatus? status,
+  }) async =>
+      throw _offline;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('the approvals desk does not call this');
+}
+
 void main() {
   setUpAll(() async {
     await initializeDateFormatting('bn', null);
@@ -77,15 +110,26 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  Future<void> pumpScreen(WidgetTester tester, Widget screen) async {
+  Future<void> pumpScreen(
+    WidgetTester tester,
+    Widget screen, {
+    AdminRepository? admin,
+    bool autoRetry = true,
+  }) async {
     tester.view.physicalSize = const Size(412, 915);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
     container = ProviderContainer(
+      // Riverpod 3 retries a failed provider on a timer. That is what a real
+      // device should do, but it leaves a pending timer that the test binding
+      // reports as a failure, so the error-path test turns it off.
+      retry: autoRetry ? null : (retryCount, error) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         currentUserProvider.overrideWithValue(_vendorUser),
+        adminRepositoryProvider
+            .overrideWithValue(admin ?? MockAdminRepository()),
       ],
     );
     addTearDown(container.dispose);
@@ -286,5 +330,20 @@ void main() {
         .firstWhere((v) => v.shopName == target);
     expect(suspended.status, 'suspended');
     expect(suspended.reason, reason);
+  });
+
+  testWidgets('a failed approvals request is reported, never shown as empty',
+      (tester) async {
+    await pumpScreen(
+      tester,
+      const AdminApprovalsScreen(),
+      admin: const _FailingAdminRepository(),
+      autoRetry: false,
+    );
+
+    // An administrator who cannot load the queue must not be told that nothing
+    // is waiting: that is how two real applications went unseen.
+    expect(find.byType(ErrorState), findsWidgets);
+    expect(find.text('কিছু অপেক্ষা করছে না'), findsNothing);
   });
 }

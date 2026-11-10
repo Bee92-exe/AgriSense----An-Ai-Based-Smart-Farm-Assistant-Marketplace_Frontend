@@ -15,6 +15,7 @@ import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_screen.dart';
 import '../../data/models/enums.dart';
 import '../../data/providers.dart';
+import '../../data/repositories/auth_repository.dart';
 import '../../data/repositories/diagnosis_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../home/home_providers.dart';
@@ -67,10 +68,15 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   ///
   /// The idempotency key is generated once per photo, not once per attempt: a
   /// retry after a timeout must reuse it so the server can recognise the
-  /// duplicate (FR-27).
+  /// duplicate (FR-27). The same key is what makes the offline queue safe — the
+  /// queued attempt is the *same* upload, not a second one.
   Future<void> _submit() async {
     final bytes = _bytes;
     if (bytes == null) return;
+
+    final clientUuid = const Uuid().v4();
+    final photo = PhotoUpload(bytes: bytes, filename: _filename ?? 'leaf.jpg');
+    final l = AppL10n.of(context);
 
     setState(() {
       _busy = true;
@@ -79,18 +85,47 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
     try {
       final diagnosis = await ref.read(diagnosisRepositoryProvider).submit(
-            PhotoUpload(bytes: bytes, filename: _filename ?? 'leaf.jpg'),
-            clientUuid: const Uuid().v4(),
+            photo,
+            clientUuid: clientUuid,
             crop: _crop,
           );
       ref.invalidate(diagnosisHistoryProvider);
       if (!mounted) return;
       context.pushReplacement('${Routes.result}?id=${diagnosis.id}');
+    } on ApiException catch (error) {
+      // No signal in a field is the expected case, not an error screen: keep the
+      // photo and send it when the app next has a connection.
+      if (error.code == 'network_error') {
+        await ref.read(diagnosisQueueProvider).enqueue(
+              photo: photo,
+              clientUuid: clientUuid,
+              crop: _crop,
+            );
+        ref.invalidate(diagnosisHistoryProvider);
+        if (!mounted) return;
+        setState(() {
+          _busy = false;
+          _bytes = null;
+          _filename = null;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l.diagnosisQueuedTitle}\n${l.diagnosisQueuedBody}'),
+          ),
+        );
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _busy = false;
+        _error = error.serverMessageBn ?? l.stateErrorBody;
+      });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = AppL10n.of(context).stateErrorBody;
+        _error = l.stateErrorBody;
       });
     }
   }

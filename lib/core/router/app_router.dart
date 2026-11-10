@@ -6,7 +6,11 @@ import '../../data/models/enums.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/pending_approval_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/assistant/assistant_screen.dart';
+import '../../features/advisory/advisory_screen.dart';
 import '../../features/auth/reset_password_screen.dart';
+import '../../features/crop_advice/calendar_screen.dart';
+import '../../features/crop_advice/crop_advice_screen.dart';
 import '../../features/diagnosis/capture_screen.dart';
 import '../../features/diagnosis/history_screen.dart';
 import '../../features/diagnosis/result_screen.dart';
@@ -38,6 +42,10 @@ abstract final class Routes {
   static const pending = '/pending-approval';
 
   static const home = '/home';
+  static const assistant = '/assistant';
+  static const advisory = '/advisory';
+  static const cropAdvice = '/crop-advice';
+  static const calendar = '/calendar';
   static const capture = '/diagnosis/capture';
   static const result = '/diagnosis/result';
   static const history = '/history';
@@ -163,6 +171,28 @@ final routerProvider = Provider<GoRouter>((ref) {
             NewsDetailScreen(newsId: state.pathParameters['id']!),
       ),
       GoRoute(path: Routes.weather, builder: (_, _) => const WeatherScreen()),
+      GoRoute(
+        path: Routes.assistant,
+        builder: (_, _) => const AssistantScreen(),
+      ),
+      GoRoute(
+        path: Routes.advisory,
+        builder: (_, _) => const AdvisoryScreen(),
+      ),
+      GoRoute(
+        path: '${Routes.advisory}/:id',
+        builder: (_, state) =>
+            ArticleScreen(articleId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: Routes.cropAdvice,
+        builder: (_, _) => const CropAdviceScreen(),
+      ),
+      GoRoute(
+        path: '${Routes.calendar}/:crop',
+        builder: (_, state) =>
+            CalendarScreen(crop: state.pathParameters['crop']!),
+      ),
       GoRoute(path: Routes.profile, builder: (_, _) => const ProfileScreen()),
 
       // Vendor / expert / admin share one shell for now; each role's own section
