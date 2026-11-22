@@ -50,8 +50,7 @@ final adminSettingsProvider = FutureProvider<AdminSettings>(
   (ref) async => ref.watch(adminRepositoryProvider).settings(),
 );
 
-/// The control room. One screen answers "is the platform healthy, and what is
-/// waiting on me" before the admin has to open a single list.
+
 class AdminHomeScreen extends ConsumerWidget {
   const AdminHomeScreen({super.key});
 
@@ -74,8 +73,6 @@ class AdminHomeScreen extends ConsumerWidget {
       return const Scaffold(body: LoadingState(rows: 3));
     }
 
-    // `.value` is null while loading *and* after a failure, so the count alone
-    // cannot tell "nothing is waiting" from "the queue did not load".
     final approvalsFailed = vendors.hasError || users.hasError;
     final pendingCount = (vendors.value?.length ?? 0) +
         (users.value?.length ?? 0);
@@ -373,9 +370,7 @@ class AdminHomeScreen extends ConsumerWidget {
       };
 }
 
-/// Every account waiting for a person to say yes. Vendors and experts are the
-/// reason the screen exists, but the same queue approves a farmer too, so the
-/// admin never has to remember which list a pending account is in.
+
 class AdminApprovalsScreen extends ConsumerStatefulWidget {
   const AdminApprovalsScreen({super.key});
 
@@ -389,10 +384,7 @@ class _AdminApprovalsScreenState extends ConsumerState<AdminApprovalsScreen> {
   String? _busyId;
   ValueNotifier<int>? _tabs;
 
-  /// The desk sits inside an `IndexedStack`, so it is built once and kept
-  /// alive for the whole session. Without this the queue keeps whatever it
-  /// resolved when the app started, and an application submitted afterwards
-  /// never reaches the screen — the admin sees a permanently empty list.
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -751,9 +743,7 @@ class _ApprovalCard extends StatelessWidget {
   }
 }
 
-/// Catalogue, orders and content in one read-only-by-default monitor. The admin
-/// can take a listing or a story down; they can never buy, and the note at the
-/// top of the order list says so.
+
 class AdminMonitorScreen extends ConsumerStatefulWidget {
   const AdminMonitorScreen({super.key});
 
@@ -1174,9 +1164,7 @@ class _AdminContentCard extends StatelessWidget {
   }
 }
 
-/// Platform switches, the source console and the admin's own account. The
-/// settings form is separate so its controllers are built after the async value
-/// exists, never with an empty placeholder that the admin could save.
+
 class AdminSystemScreen extends ConsumerWidget {
   const AdminSystemScreen({super.key});
 
